@@ -11,6 +11,44 @@
     "uid": "chime-sdk-messaging-2021-05-15"
   },
   "operations": {
+    "AssociateChannelFlow": {
+      "name": "AssociateChannelFlow",
+      "http": {
+        "method": "PUT",
+        "requestUri": "/channels/{channelArn}/channel-flow",
+        "responseCode": 200
+      },
+      "input": {
+        "shape": "AssociateChannelFlowRequest"
+      },
+      "errors": [
+        {
+          "shape": "BadRequestException"
+        },
+        {
+          "shape": "ForbiddenException"
+        },
+        {
+          "shape": "NotFoundException"
+        },
+        {
+          "shape": "UnauthorizedClientException"
+        },
+        {
+          "shape": "ConflictException"
+        },
+        {
+          "shape": "ThrottledClientException"
+        },
+        {
+          "shape": "ServiceUnavailableException"
+        },
+        {
+          "shape": "ServiceFailureException"
+        }
+      ],
+      "documentation": "<p>Associates a channel flow with a channel. Once associated, all messages to that channel go through channel flow processors. To stop processing, use the <code>DisassociateChannelFlow</code> API.</p> <note> <p>Only administrators or channel moderators can associate a channel flow. The <code>x-amz-chime-bearer</code> request header is mandatory. Use the ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call as the value in the header.</p> </note>"
+    },
     "BatchCreateChannelMembership": {
       "name": "BatchCreateChannelMembership",
       "http": {
@@ -38,13 +76,57 @@
           "shape": "BadRequestException"
         },
         {
+          "shape": "NotFoundException"
+        },
+        {
           "shape": "ForbiddenException"
         },
         {
           "shape": "ThrottledClientException"
+        },
+        {
+          "shape": "ResourceLimitExceededException"
         }
       ],
-      "documentation": "<p>Adds a specified number of users to a channel. </p>"
+      "documentation": "<p>Adds a specified number of users and bots to a channel. </p>"
+    },
+    "ChannelFlowCallback": {
+      "name": "ChannelFlowCallback",
+      "http": {
+        "method": "POST",
+        "requestUri": "/channels/{channelArn}?operation=channel-flow-callback",
+        "responseCode": 200
+      },
+      "input": {
+        "shape": "ChannelFlowCallbackRequest"
+      },
+      "output": {
+        "shape": "ChannelFlowCallbackResponse"
+      },
+      "errors": [
+        {
+          "shape": "BadRequestException"
+        },
+        {
+          "shape": "ForbiddenException"
+        },
+        {
+          "shape": "UnauthorizedClientException"
+        },
+        {
+          "shape": "ConflictException"
+        },
+        {
+          "shape": "ThrottledClientException"
+        },
+        {
+          "shape": "ServiceUnavailableException"
+        },
+        {
+          "shape": "ServiceFailureException"
+        }
+      ],
+      "documentation": "<p>Calls back Chime SDK Messaging with a processing response message. This should be invoked from the processor Lambda. This is a developer API.</p> <p>You can return one of the following processing responses:</p> <ul> <li> <p>Update message content or metadata</p> </li> <li> <p>Deny a message</p> </li> <li> <p>Make no changes to the message</p> </li> </ul>"
     },
     "CreateChannel": {
       "name": "CreateChannel",
@@ -85,7 +167,7 @@
           "shape": "ServiceFailureException"
         }
       ],
-      "documentation": "<p>Creates a channel to which you can add users and send messages.</p> <p> <b>Restriction</b>: You can't change a channel's privacy.</p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the <code>AppInstanceUserArn</code> of the user that makes the API call as the value in the header.</p> </note>"
+      "documentation": "<p>Creates a channel to which you can add users and send messages.</p> <p> <b>Restriction</b>: You can't change a channel's privacy.</p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call as the value in the header.</p> </note>"
     },
     "CreateChannelBan": {
       "name": "CreateChannelBan",
@@ -126,20 +208,20 @@
           "shape": "ServiceFailureException"
         }
       ],
-      "documentation": "<p>Permanently bans a member from a channel. Moderators can't add banned members to a channel. To undo a ban, you first have to <code>DeleteChannelBan</code>, and then <code>CreateChannelMembership</code>. Bans are cleaned up when you delete users or channels.</p> <p>If you ban a user who is already part of a channel, that user is automatically kicked from the channel.</p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the <code>AppInstanceUserArn</code> of the user that makes the API call as the value in the header.</p> </note>"
+      "documentation": "<p>Permanently bans a member from a channel. Moderators can't add banned members to a channel. To undo a ban, you first have to <code>DeleteChannelBan</code>, and then <code>CreateChannelMembership</code>. Bans are cleaned up when you delete users or channels.</p> <p>If you ban a user who is already part of a channel, that user is automatically kicked from the channel.</p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call as the value in the header.</p> </note>"
     },
-    "CreateChannelMembership": {
-      "name": "CreateChannelMembership",
+    "CreateChannelFlow": {
+      "name": "CreateChannelFlow",
       "http": {
         "method": "POST",
-        "requestUri": "/channels/{channelArn}/memberships",
+        "requestUri": "/channel-flows",
         "responseCode": 201
       },
       "input": {
-        "shape": "CreateChannelMembershipRequest"
+        "shape": "CreateChannelFlowRequest"
       },
       "output": {
-        "shape": "CreateChannelMembershipResponse"
+        "shape": "CreateChannelFlowResponse"
       },
       "errors": [
         {
@@ -167,7 +249,51 @@
           "shape": "ServiceFailureException"
         }
       ],
-      "documentation": "<p>Adds a user to a channel. The <code>InvitedBy</code> response field is derived from the request header. A channel member can:</p> <ul> <li> <p>List messages</p> </li> <li> <p>Send messages</p> </li> <li> <p>Receive messages</p> </li> <li> <p>Edit their own messages</p> </li> <li> <p>Leave the channel</p> </li> </ul> <p>Privacy settings impact this action as follows:</p> <ul> <li> <p>Public Channels: You do not need to be a member to list messages, but you must be a member to send messages.</p> </li> <li> <p>Private Channels: You must be a member to list or send messages.</p> </li> </ul> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the <code>AppInstanceUserArn</code> of the user that makes the API call as the value in the header.</p> </note>"
+      "documentation": "<p>Creates a channel flow, a container for processors. Processors are AWS Lambda functions that perform actions on chat messages, such as stripping out profanity. You can associate channel flows with channels, and the processors in the channel flow then take action on all messages sent to that channel. This is a developer API.</p> <p>Channel flows process the following items:</p> <ol> <li> <p>New and updated messages</p> </li> <li> <p>Persistent and non-persistent messages</p> </li> <li> <p>The Standard message type</p> </li> </ol> <note> <p>Channel flows don't process Control or System messages. For more information about the message types provided by Chime SDK Messaging, refer to <a href=\"https://docs.aws.amazon.com/chime/latest/dg/using-the-messaging-sdk.html#msg-types\">Message types</a> in the <i>Amazon Chime developer guide</i>.</p> </note>"
+    },
+    "CreateChannelMembership": {
+      "name": "CreateChannelMembership",
+      "http": {
+        "method": "POST",
+        "requestUri": "/channels/{channelArn}/memberships",
+        "responseCode": 201
+      },
+      "input": {
+        "shape": "CreateChannelMembershipRequest"
+      },
+      "output": {
+        "shape": "CreateChannelMembershipResponse"
+      },
+      "errors": [
+        {
+          "shape": "BadRequestException"
+        },
+        {
+          "shape": "NotFoundException"
+        },
+        {
+          "shape": "ForbiddenException"
+        },
+        {
+          "shape": "UnauthorizedClientException"
+        },
+        {
+          "shape": "ConflictException"
+        },
+        {
+          "shape": "ResourceLimitExceededException"
+        },
+        {
+          "shape": "ThrottledClientException"
+        },
+        {
+          "shape": "ServiceUnavailableException"
+        },
+        {
+          "shape": "ServiceFailureException"
+        }
+      ],
+      "documentation": "<p>Adds a member to a channel. The <code>InvitedBy</code> field in <code>ChannelMembership</code> is derived from the request header. A channel member can:</p> <ul> <li> <p>List messages</p> </li> <li> <p>Send messages</p> </li> <li> <p>Receive messages</p> </li> <li> <p>Edit their own messages</p> </li> <li> <p>Leave the channel</p> </li> </ul> <p>Privacy settings impact this action as follows:</p> <ul> <li> <p>Public Channels: You do not need to be a member to list messages, but you must be a member to send messages.</p> </li> <li> <p>Private Channels: You must be a member to list or send messages.</p> </li> </ul> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the ARN of the <code>AppInstanceUserArn</code> or <code>AppInstanceBot</code> that makes the API call as the value in the header.</p> </note>"
     },
     "CreateChannelModerator": {
       "name": "CreateChannelModerator",
@@ -208,7 +334,7 @@
           "shape": "ServiceFailureException"
         }
       ],
-      "documentation": "<p>Creates a new <code>ChannelModerator</code>. A channel moderator can:</p> <ul> <li> <p>Add and remove other members of the channel.</p> </li> <li> <p>Add and remove other moderators of the channel.</p> </li> <li> <p>Add and remove user bans for the channel.</p> </li> <li> <p>Redact messages in the channel.</p> </li> <li> <p>List messages in the channel.</p> </li> </ul> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the <code>AppInstanceUserArn</code> of the user that makes the API call as the value in the header.</p> </note>"
+      "documentation": "<p>Creates a new <code>ChannelModerator</code>. A channel moderator can:</p> <ul> <li> <p>Add and remove other members of the channel.</p> </li> <li> <p>Add and remove other moderators of the channel.</p> </li> <li> <p>Add and remove user bans for the channel.</p> </li> <li> <p>Redact messages in the channel.</p> </li> <li> <p>List messages in the channel.</p> </li> </ul> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code>of the user that makes the API call as the value in the header.</p> </note>"
     },
     "DeleteChannel": {
       "name": "DeleteChannel",
@@ -228,6 +354,9 @@
           "shape": "ForbiddenException"
         },
         {
+          "shape": "ConflictException"
+        },
+        {
           "shape": "UnauthorizedClientException"
         },
         {
@@ -240,7 +369,7 @@
           "shape": "ServiceFailureException"
         }
       ],
-      "documentation": "<p>Immediately makes a channel and its memberships inaccessible and marks them for deletion. This is an irreversible process.</p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the <code>AppInstanceUserArn</code> of the user that makes the API call as the value in the header.</p> </note>"
+      "documentation": "<p>Immediately makes a channel and its memberships inaccessible and marks them for deletion. This is an irreversible process.</p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the ARN of the <code>AppInstanceUserArn</code> or <code>AppInstanceBot</code> that makes the API call as the value in the header.</p> </note>"
     },
     "DeleteChannelBan": {
       "name": "DeleteChannelBan",
@@ -272,7 +401,42 @@
           "shape": "ServiceFailureException"
         }
       ],
-      "documentation": "<p>Removes a user from a channel's ban list.</p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the <code>AppInstanceUserArn</code> of the user that makes the API call as the value in the header.</p> </note>"
+      "documentation": "<p>Removes a member from a channel's ban list.</p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call as the value in the header.</p> </note>"
+    },
+    "DeleteChannelFlow": {
+      "name": "DeleteChannelFlow",
+      "http": {
+        "method": "DELETE",
+        "requestUri": "/channel-flows/{channelFlowArn}",
+        "responseCode": 204
+      },
+      "input": {
+        "shape": "DeleteChannelFlowRequest"
+      },
+      "errors": [
+        {
+          "shape": "BadRequestException"
+        },
+        {
+          "shape": "ForbiddenException"
+        },
+        {
+          "shape": "UnauthorizedClientException"
+        },
+        {
+          "shape": "ThrottledClientException"
+        },
+        {
+          "shape": "ConflictException"
+        },
+        {
+          "shape": "ServiceUnavailableException"
+        },
+        {
+          "shape": "ServiceFailureException"
+        }
+      ],
+      "documentation": "<p>Deletes a channel flow, an irreversible process. This is a developer API.</p> <note> <p> This API works only when the channel flow is not associated with any channel. To get a list of all channels that a channel flow is associated with, use the <code>ListChannelsAssociatedWithChannelFlow</code> API. Use the <code>DisassociateChannelFlow</code> API to disassociate a channel flow from all channels. </p> </note>"
     },
     "DeleteChannelMembership": {
       "name": "DeleteChannelMembership",
@@ -339,7 +503,7 @@
           "shape": "ServiceFailureException"
         }
       ],
-      "documentation": "<p>Deletes a channel message. Only admins can perform this action. Deletion makes messages inaccessible immediately. A background process deletes any revisions created by <code>UpdateChannelMessage</code>.</p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the <code>AppInstanceUserArn</code> of the user that makes the API call as the value in the header.</p> </note>"
+      "documentation": "<p>Deletes a channel message. Only admins can perform this action. Deletion makes messages inaccessible immediately. A background process deletes any revisions created by <code>UpdateChannelMessage</code>.</p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call as the value in the header.</p> </note>"
     },
     "DeleteChannelModerator": {
       "name": "DeleteChannelModerator",
@@ -371,7 +535,39 @@
           "shape": "ServiceFailureException"
         }
       ],
-      "documentation": "<p>Deletes a channel moderator.</p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the <code>AppInstanceUserArn</code> of the user that makes the API call as the value in the header.</p> </note>"
+      "documentation": "<p>Deletes a channel moderator.</p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call as the value in the header.</p> </note>"
+    },
+    "DeleteMessagingStreamingConfigurations": {
+      "name": "DeleteMessagingStreamingConfigurations",
+      "http": {
+        "method": "DELETE",
+        "requestUri": "/app-instances/{appInstanceArn}/streaming-configurations",
+        "responseCode": 204
+      },
+      "input": {
+        "shape": "DeleteMessagingStreamingConfigurationsRequest"
+      },
+      "errors": [
+        {
+          "shape": "BadRequestException"
+        },
+        {
+          "shape": "ForbiddenException"
+        },
+        {
+          "shape": "UnauthorizedClientException"
+        },
+        {
+          "shape": "ThrottledClientException"
+        },
+        {
+          "shape": "ServiceUnavailableException"
+        },
+        {
+          "shape": "ServiceFailureException"
+        }
+      ],
+      "documentation": "<p>Deletes the streaming configurations for an <code>AppInstance</code>. For more information, see <a href=\"https://docs.aws.amazon.com/chime-sdk/latest/dg/streaming-export.html\">Streaming messaging data</a> in the <i>Amazon Chime SDK Developer Guide</i>.</p>"
     },
     "DescribeChannel": {
       "name": "DescribeChannel",
@@ -406,7 +602,7 @@
           "shape": "ServiceFailureException"
         }
       ],
-      "documentation": "<p>Returns the full details of a channel in an Amazon Chime <code>AppInstance</code>.</p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the <code>AppInstanceUserArn</code> of the user that makes the API call as the value in the header.</p> </note>"
+      "documentation": "<p>Returns the full details of a channel in an Amazon Chime <code>AppInstance</code>.</p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call as the value in the header.</p> </note>"
     },
     "DescribeChannelBan": {
       "name": "DescribeChannelBan",
@@ -444,7 +640,42 @@
           "shape": "ServiceFailureException"
         }
       ],
-      "documentation": "<p>Returns the full details of a channel ban.</p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the <code>AppInstanceUserArn</code> of the user that makes the API call as the value in the header.</p> </note>"
+      "documentation": "<p>Returns the full details of a channel ban.</p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call as the value in the header.</p> </note>"
+    },
+    "DescribeChannelFlow": {
+      "name": "DescribeChannelFlow",
+      "http": {
+        "method": "GET",
+        "requestUri": "/channel-flows/{channelFlowArn}",
+        "responseCode": 200
+      },
+      "input": {
+        "shape": "DescribeChannelFlowRequest"
+      },
+      "output": {
+        "shape": "DescribeChannelFlowResponse"
+      },
+      "errors": [
+        {
+          "shape": "BadRequestException"
+        },
+        {
+          "shape": "ForbiddenException"
+        },
+        {
+          "shape": "UnauthorizedClientException"
+        },
+        {
+          "shape": "ThrottledClientException"
+        },
+        {
+          "shape": "ServiceUnavailableException"
+        },
+        {
+          "shape": "ServiceFailureException"
+        }
+      ],
+      "documentation": "<p>Returns the full details of a channel flow in an Amazon Chime <code>AppInstance</code>. This is a developer API.</p>"
     },
     "DescribeChannelMembership": {
       "name": "DescribeChannelMembership",
@@ -482,7 +713,7 @@
           "shape": "ServiceFailureException"
         }
       ],
-      "documentation": "<p>Returns the full details of a user's channel membership.</p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the <code>AppInstanceUserArn</code> of the user that makes the API call as the value in the header.</p> </note>"
+      "documentation": "<p>Returns the full details of a user's channel membership.</p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call as the value in the header.</p> </note>"
     },
     "DescribeChannelMembershipForAppInstanceUser": {
       "name": "DescribeChannelMembershipForAppInstanceUser",
@@ -517,7 +748,7 @@
           "shape": "ServiceFailureException"
         }
       ],
-      "documentation": "<p> Returns the details of a channel based on the membership of the specified <code>AppInstanceUser</code>.</p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the <code>AppInstanceUserArn</code> of the user that makes the API call as the value in the header.</p> </note>"
+      "documentation": "<p> Returns the details of a channel based on the membership of the specified <code>AppInstanceUser</code> or <code>AppInstanceBot</code>.</p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call as the value in the header.</p> </note>"
     },
     "DescribeChannelModeratedByAppInstanceUser": {
       "name": "DescribeChannelModeratedByAppInstanceUser",
@@ -552,7 +783,7 @@
           "shape": "ServiceFailureException"
         }
       ],
-      "documentation": "<p>Returns the full details of a channel moderated by the specified <code>AppInstanceUser</code>.</p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the <code>AppInstanceUserArn</code> of the user that makes the API call as the value in the header.</p> </note>"
+      "documentation": "<p>Returns the full details of a channel moderated by the specified <code>AppInstanceUser</code> or <code>AppInstanceBot</code>.</p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call as the value in the header.</p> </note>"
     },
     "DescribeChannelModerator": {
       "name": "DescribeChannelModerator",
@@ -592,6 +823,79 @@
       ],
       "documentation": "<p>Returns the full details of a single ChannelModerator.</p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the <code>AppInstanceUserArn</code> of the user that makes the API call as the value in the header.</p> </note>"
     },
+    "DisassociateChannelFlow": {
+      "name": "DisassociateChannelFlow",
+      "http": {
+        "method": "DELETE",
+        "requestUri": "/channels/{channelArn}/channel-flow/{channelFlowArn}",
+        "responseCode": 204
+      },
+      "input": {
+        "shape": "DisassociateChannelFlowRequest"
+      },
+      "errors": [
+        {
+          "shape": "BadRequestException"
+        },
+        {
+          "shape": "ForbiddenException"
+        },
+        {
+          "shape": "NotFoundException"
+        },
+        {
+          "shape": "UnauthorizedClientException"
+        },
+        {
+          "shape": "ConflictException"
+        },
+        {
+          "shape": "ThrottledClientException"
+        },
+        {
+          "shape": "ServiceUnavailableException"
+        },
+        {
+          "shape": "ServiceFailureException"
+        }
+      ],
+      "documentation": "<p>Disassociates a channel flow from all its channels. Once disassociated, all messages to that channel stop going through the channel flow processor.</p> <note> <p>Only administrators or channel moderators can disassociate a channel flow.</p> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call as the value in the header.</p> </note>"
+    },
+    "GetChannelMembershipPreferences": {
+      "name": "GetChannelMembershipPreferences",
+      "http": {
+        "method": "GET",
+        "requestUri": "/channels/{channelArn}/memberships/{memberArn}/preferences",
+        "responseCode": 200
+      },
+      "input": {
+        "shape": "GetChannelMembershipPreferencesRequest"
+      },
+      "output": {
+        "shape": "GetChannelMembershipPreferencesResponse"
+      },
+      "errors": [
+        {
+          "shape": "BadRequestException"
+        },
+        {
+          "shape": "UnauthorizedClientException"
+        },
+        {
+          "shape": "ForbiddenException"
+        },
+        {
+          "shape": "ThrottledClientException"
+        },
+        {
+          "shape": "ServiceUnavailableException"
+        },
+        {
+          "shape": "ServiceFailureException"
+        }
+      ],
+      "documentation": "<p>Gets the membership preferences of an <code>AppInstanceUser</code> or <code>AppInstanceBot</code> for the specified channel. A user or a bot must be a member of the channel and own the membership to be able to retrieve membership preferences. Users or bots in the <code>AppInstanceAdmin</code> and channel moderator roles can't retrieve preferences for other users or bots. Banned users or bots can't retrieve membership preferences for the channel from which they are banned.</p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call as the value in the header.</p> </note>"
+    },
     "GetChannelMessage": {
       "name": "GetChannelMessage",
       "http": {
@@ -628,7 +932,42 @@
           "shape": "ServiceFailureException"
         }
       ],
-      "documentation": "<p>Gets the full details of a channel message.</p> <note> <p>The x-amz-chime-bearer request header is mandatory. Use the <code>AppInstanceUserArn</code> of the user that makes the API call as the value in the header.</p> </note>"
+      "documentation": "<p>Gets the full details of a channel message.</p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call as the value in the header.</p> </note>"
+    },
+    "GetChannelMessageStatus": {
+      "name": "GetChannelMessageStatus",
+      "http": {
+        "method": "GET",
+        "requestUri": "/channels/{channelArn}/messages/{messageId}?scope=message-status",
+        "responseCode": 200
+      },
+      "input": {
+        "shape": "GetChannelMessageStatusRequest"
+      },
+      "output": {
+        "shape": "GetChannelMessageStatusResponse"
+      },
+      "errors": [
+        {
+          "shape": "BadRequestException"
+        },
+        {
+          "shape": "ForbiddenException"
+        },
+        {
+          "shape": "UnauthorizedClientException"
+        },
+        {
+          "shape": "ThrottledClientException"
+        },
+        {
+          "shape": "ServiceUnavailableException"
+        },
+        {
+          "shape": "ServiceFailureException"
+        }
+      ],
+      "documentation": "<p>Gets message status for a specified <code>messageId</code>. Use this API to determine the intermediate status of messages going through channel flow processing. The API provides an alternative to retrieving message status if the event was not received because a client wasn't connected to a websocket. </p> <p>Messages can have any one of these statuses.</p> <dl> <dt>SENT</dt> <dd> <p>Message processed successfully</p> </dd> <dt>PENDING</dt> <dd> <p>Ongoing processing</p> </dd> <dt>FAILED</dt> <dd> <p>Processing failed</p> </dd> <dt>DENIED</dt> <dd> <p>Messasge denied by the processor</p> </dd> </dl> <note> <ul> <li> <p>This API does not return statuses for denied messages, because we don't store them once the processor denies them. </p> </li> <li> <p>Only the message sender can invoke this API.</p> </li> <li> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call as the value in the header.</p> </li> </ul> </note>"
     },
     "GetMessagingSessionEndpoint": {
       "name": "GetMessagingSessionEndpoint",
@@ -661,6 +1000,44 @@
         }
       ],
       "documentation": "<p>The details of the endpoint for the messaging session.</p>"
+    },
+    "GetMessagingStreamingConfigurations": {
+      "name": "GetMessagingStreamingConfigurations",
+      "http": {
+        "method": "GET",
+        "requestUri": "/app-instances/{appInstanceArn}/streaming-configurations",
+        "responseCode": 200
+      },
+      "input": {
+        "shape": "GetMessagingStreamingConfigurationsRequest"
+      },
+      "output": {
+        "shape": "GetMessagingStreamingConfigurationsResponse"
+      },
+      "errors": [
+        {
+          "shape": "BadRequestException"
+        },
+        {
+          "shape": "ForbiddenException"
+        },
+        {
+          "shape": "NotFoundException"
+        },
+        {
+          "shape": "UnauthorizedClientException"
+        },
+        {
+          "shape": "ThrottledClientException"
+        },
+        {
+          "shape": "ServiceUnavailableException"
+        },
+        {
+          "shape": "ServiceFailureException"
+        }
+      ],
+      "documentation": "<p>Retrieves the data streaming configuration for an <code>AppInstance</code>. For more information, see <a href=\"https://docs.aws.amazon.com/chime-sdk/latest/dg/streaming-export.html\">Streaming messaging data</a> in the <i>Amazon Chime SDK Developer Guide</i>.</p>"
     },
     "ListChannelBans": {
       "name": "ListChannelBans",
@@ -695,7 +1072,42 @@
           "shape": "ServiceFailureException"
         }
       ],
-      "documentation": "<p>Lists all the users banned from a particular channel.</p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the <code>AppInstanceUserArn</code> of the user that makes the API call as the value in the header.</p> </note>"
+      "documentation": "<p>Lists all the users and bots banned from a particular channel.</p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call as the value in the header.</p> </note>"
+    },
+    "ListChannelFlows": {
+      "name": "ListChannelFlows",
+      "http": {
+        "method": "GET",
+        "requestUri": "/channel-flows",
+        "responseCode": 200
+      },
+      "input": {
+        "shape": "ListChannelFlowsRequest"
+      },
+      "output": {
+        "shape": "ListChannelFlowsResponse"
+      },
+      "errors": [
+        {
+          "shape": "BadRequestException"
+        },
+        {
+          "shape": "ForbiddenException"
+        },
+        {
+          "shape": "UnauthorizedClientException"
+        },
+        {
+          "shape": "ThrottledClientException"
+        },
+        {
+          "shape": "ServiceUnavailableException"
+        },
+        {
+          "shape": "ServiceFailureException"
+        }
+      ],
+      "documentation": "<p>Returns a paginated lists of all the channel flows created under a single Chime. This is a developer API.</p>"
     },
     "ListChannelMemberships": {
       "name": "ListChannelMemberships",
@@ -730,7 +1142,7 @@
           "shape": "ServiceFailureException"
         }
       ],
-      "documentation": "<p>Lists all channel memberships in a channel.</p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the <code>AppInstanceUserArn</code> of the user that makes the API call as the value in the header.</p> </note>"
+      "documentation": "<p>Lists all channel memberships in a channel.</p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call as the value in the header.</p> </note> <p>If you want to list the channels to which a specific app instance user belongs, see the <a href=\"https://docs.aws.amazon.com/chime/latest/APIReference/API_messaging-chime_ListChannelMembershipsForAppInstanceUser.html\">ListChannelMembershipsForAppInstanceUser</a> API.</p>"
     },
     "ListChannelMembershipsForAppInstanceUser": {
       "name": "ListChannelMembershipsForAppInstanceUser",
@@ -765,7 +1177,7 @@
           "shape": "ServiceFailureException"
         }
       ],
-      "documentation": "<p> Lists all channels that a particular <code>AppInstanceUser</code> is a part of. Only an <code>AppInstanceAdmin</code> can call the API with a user ARN that is not their own. </p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the <code>AppInstanceUserArn</code> of the user that makes the API call as the value in the header.</p> </note>"
+      "documentation": "<p> Lists all channels that anr <code>AppInstanceUser</code> or <code>AppInstanceBot</code> is a part of. Only an <code>AppInstanceAdmin</code> can call the API with a user ARN that is not their own. </p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call as the value in the header.</p> </note>"
     },
     "ListChannelMessages": {
       "name": "ListChannelMessages",
@@ -800,7 +1212,7 @@
           "shape": "ServiceFailureException"
         }
       ],
-      "documentation": "<p>List all the messages in a channel. Returns a paginated list of <code>ChannelMessages</code>. By default, sorted by creation timestamp in descending order.</p> <note> <p>Redacted messages appear in the results as empty, since they are only redacted, not deleted. Deleted messages do not appear in the results. This action always returns the latest version of an edited message.</p> <p>Also, the x-amz-chime-bearer request header is mandatory. Use the <code>AppInstanceUserArn</code> of the user that makes the API call as the value in the header.</p> </note>"
+      "documentation": "<p>List all the messages in a channel. Returns a paginated list of <code>ChannelMessages</code>. By default, sorted by creation timestamp in descending order.</p> <note> <p>Redacted messages appear in the results as empty, since they are only redacted, not deleted. Deleted messages do not appear in the results. This action always returns the latest version of an edited message.</p> <p>Also, the <code>x-amz-chime-bearer</code> request header is mandatory. Use the ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call as the value in the header.</p> </note>"
     },
     "ListChannelModerators": {
       "name": "ListChannelModerators",
@@ -835,7 +1247,7 @@
           "shape": "ServiceFailureException"
         }
       ],
-      "documentation": "<p>Lists all the moderators for a channel.</p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the <code>AppInstanceUserArn</code> of the user that makes the API call as the value in the header.</p> </note>"
+      "documentation": "<p>Lists all the moderators for a channel.</p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call as the value in the header.</p> </note>"
     },
     "ListChannels": {
       "name": "ListChannels",
@@ -870,7 +1282,42 @@
           "shape": "ServiceFailureException"
         }
       ],
-      "documentation": "<p>Lists all Channels created under a single Chime App as a paginated list. You can specify filters to narrow results.</p> <p class=\"title\"> <b>Functionality &amp; restrictions</b> </p> <ul> <li> <p>Use privacy = <code>PUBLIC</code> to retrieve all public channels in the account.</p> </li> <li> <p>Only an <code>AppInstanceAdmin</code> can set privacy = <code>PRIVATE</code> to list the private channels in an account.</p> </li> </ul> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the <code>AppInstanceUserArn</code> of the user that makes the API call as the value in the header.</p> </note>"
+      "documentation": "<p>Lists all Channels created under a single Chime App as a paginated list. You can specify filters to narrow results.</p> <p class=\"title\"> <b>Functionality &amp; restrictions</b> </p> <ul> <li> <p>Use privacy = <code>PUBLIC</code> to retrieve all public channels in the account.</p> </li> <li> <p>Only an <code>AppInstanceAdmin</code> can set privacy = <code>PRIVATE</code> to list the private channels in an account.</p> </li> </ul> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call as the value in the header.</p> </note>"
+    },
+    "ListChannelsAssociatedWithChannelFlow": {
+      "name": "ListChannelsAssociatedWithChannelFlow",
+      "http": {
+        "method": "GET",
+        "requestUri": "/channels?scope=channel-flow-associations",
+        "responseCode": 200
+      },
+      "input": {
+        "shape": "ListChannelsAssociatedWithChannelFlowRequest"
+      },
+      "output": {
+        "shape": "ListChannelsAssociatedWithChannelFlowResponse"
+      },
+      "errors": [
+        {
+          "shape": "BadRequestException"
+        },
+        {
+          "shape": "ForbiddenException"
+        },
+        {
+          "shape": "UnauthorizedClientException"
+        },
+        {
+          "shape": "ThrottledClientException"
+        },
+        {
+          "shape": "ServiceUnavailableException"
+        },
+        {
+          "shape": "ServiceFailureException"
+        }
+      ],
+      "documentation": "<p>Lists all channels associated with a specified channel flow. You can associate a channel flow with multiple channels, but you can only associate a channel with one channel flow. This is a developer API.</p>"
     },
     "ListChannelsModeratedByAppInstanceUser": {
       "name": "ListChannelsModeratedByAppInstanceUser",
@@ -905,7 +1352,194 @@
           "shape": "ServiceFailureException"
         }
       ],
-      "documentation": "<p>A list of the channels moderated by an <code>AppInstanceUser</code>.</p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the <code>AppInstanceUserArn</code> of the user that makes the API call as the value in the header.</p> </note>"
+      "documentation": "<p>A list of the channels moderated by an <code>AppInstanceUser</code>.</p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call as the value in the header.</p> </note>"
+    },
+    "ListSubChannels": {
+      "name": "ListSubChannels",
+      "http": {
+        "method": "GET",
+        "requestUri": "/channels/{channelArn}/subchannels",
+        "responseCode": 200
+      },
+      "input": {
+        "shape": "ListSubChannelsRequest"
+      },
+      "output": {
+        "shape": "ListSubChannelsResponse"
+      },
+      "errors": [
+        {
+          "shape": "BadRequestException"
+        },
+        {
+          "shape": "ForbiddenException"
+        },
+        {
+          "shape": "UnauthorizedClientException"
+        },
+        {
+          "shape": "ThrottledClientException"
+        },
+        {
+          "shape": "ServiceUnavailableException"
+        },
+        {
+          "shape": "ServiceFailureException"
+        }
+      ],
+      "documentation": "<p>Lists all the SubChannels in an elastic channel when given a channel ID. Available only to the app instance admins and channel moderators of elastic channels.</p>"
+    },
+    "ListTagsForResource": {
+      "name": "ListTagsForResource",
+      "http": {
+        "method": "GET",
+        "requestUri": "/tags",
+        "responseCode": 200
+      },
+      "input": {
+        "shape": "ListTagsForResourceRequest"
+      },
+      "output": {
+        "shape": "ListTagsForResourceResponse"
+      },
+      "errors": [
+        {
+          "shape": "BadRequestException"
+        },
+        {
+          "shape": "ForbiddenException"
+        },
+        {
+          "shape": "UnauthorizedClientException"
+        },
+        {
+          "shape": "ThrottledClientException"
+        },
+        {
+          "shape": "ServiceUnavailableException"
+        },
+        {
+          "shape": "ServiceFailureException"
+        }
+      ],
+      "documentation": "<p>Lists the tags applied to an Amazon Chime SDK messaging resource.</p>"
+    },
+    "PutChannelExpirationSettings": {
+      "name": "PutChannelExpirationSettings",
+      "http": {
+        "method": "PUT",
+        "requestUri": "/channels/{channelArn}/expiration-settings",
+        "responseCode": 200
+      },
+      "input": {
+        "shape": "PutChannelExpirationSettingsRequest"
+      },
+      "output": {
+        "shape": "PutChannelExpirationSettingsResponse"
+      },
+      "errors": [
+        {
+          "shape": "BadRequestException"
+        },
+        {
+          "shape": "ForbiddenException"
+        },
+        {
+          "shape": "ConflictException"
+        },
+        {
+          "shape": "UnauthorizedClientException"
+        },
+        {
+          "shape": "ThrottledClientException"
+        },
+        {
+          "shape": "ServiceUnavailableException"
+        },
+        {
+          "shape": "ServiceFailureException"
+        }
+      ],
+      "documentation": "<p>Sets the number of days before the channel is automatically deleted.</p> <note> <ul> <li> <p>A background process deletes expired channels within 6 hours of expiration. Actual deletion times may vary.</p> </li> <li> <p>Expired channels that have not yet been deleted appear as active, and you can update their expiration settings. The system honors the new settings.</p> </li> <li> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call as the value in the header.</p> </li> </ul> </note>"
+    },
+    "PutChannelMembershipPreferences": {
+      "name": "PutChannelMembershipPreferences",
+      "http": {
+        "method": "PUT",
+        "requestUri": "/channels/{channelArn}/memberships/{memberArn}/preferences",
+        "responseCode": 200
+      },
+      "input": {
+        "shape": "PutChannelMembershipPreferencesRequest"
+      },
+      "output": {
+        "shape": "PutChannelMembershipPreferencesResponse"
+      },
+      "errors": [
+        {
+          "shape": "BadRequestException"
+        },
+        {
+          "shape": "ConflictException"
+        },
+        {
+          "shape": "UnauthorizedClientException"
+        },
+        {
+          "shape": "ForbiddenException"
+        },
+        {
+          "shape": "ThrottledClientException"
+        },
+        {
+          "shape": "ServiceUnavailableException"
+        },
+        {
+          "shape": "ServiceFailureException"
+        }
+      ],
+      "documentation": "<p>Sets the membership preferences of an <code>AppInstanceUser</code> or <code>AppIntanceBot</code> for the specified channel. The user or bot must be a member of the channel. Only the user or bot who owns the membership can set preferences. Users or bots in the <code>AppInstanceAdmin</code> and channel moderator roles can't set preferences for other users or users. Banned users or bots can't set membership preferences for the channel from which they are banned.</p> <note> <p>The x-amz-chime-bearer request header is mandatory. Use the ARN of an <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call as the value in the header.</p> </note>"
+    },
+    "PutMessagingStreamingConfigurations": {
+      "name": "PutMessagingStreamingConfigurations",
+      "http": {
+        "method": "PUT",
+        "requestUri": "/app-instances/{appInstanceArn}/streaming-configurations",
+        "responseCode": 200
+      },
+      "input": {
+        "shape": "PutMessagingStreamingConfigurationsRequest"
+      },
+      "output": {
+        "shape": "PutMessagingStreamingConfigurationsResponse"
+      },
+      "errors": [
+        {
+          "shape": "NotFoundException"
+        },
+        {
+          "shape": "BadRequestException"
+        },
+        {
+          "shape": "ForbiddenException"
+        },
+        {
+          "shape": "UnauthorizedClientException"
+        },
+        {
+          "shape": "ThrottledClientException"
+        },
+        {
+          "shape": "ConflictException"
+        },
+        {
+          "shape": "ServiceUnavailableException"
+        },
+        {
+          "shape": "ServiceFailureException"
+        }
+      ],
+      "documentation": "<p>Sets the data streaming configuration for an <code>AppInstance</code>. For more information, see <a href=\"https://docs.aws.amazon.com/chime-sdk/latest/dg/streaming-export.html\">Streaming messaging data</a> in the <i>Amazon Chime SDK Developer Guide</i>.</p>"
     },
     "RedactChannelMessage": {
       "name": "RedactChannelMessage",
@@ -928,6 +1562,9 @@
           "shape": "ForbiddenException"
         },
         {
+          "shape": "ConflictException"
+        },
+        {
           "shape": "UnauthorizedClientException"
         },
         {
@@ -940,7 +1577,42 @@
           "shape": "ServiceFailureException"
         }
       ],
-      "documentation": "<p>Redacts message content, but not metadata. The message exists in the back end, but the action returns null content, and the state shows as redacted.</p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the <code>AppInstanceUserArn</code> of the user that makes the API call as the value in the header.</p> </note>"
+      "documentation": "<p>Redacts message content, but not metadata. The message exists in the back end, but the action returns null content, and the state shows as redacted.</p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call as the value in the header.</p> </note>"
+    },
+    "SearchChannels": {
+      "name": "SearchChannels",
+      "http": {
+        "method": "POST",
+        "requestUri": "/channels?operation=search",
+        "responseCode": 200
+      },
+      "input": {
+        "shape": "SearchChannelsRequest"
+      },
+      "output": {
+        "shape": "SearchChannelsResponse"
+      },
+      "errors": [
+        {
+          "shape": "BadRequestException"
+        },
+        {
+          "shape": "ForbiddenException"
+        },
+        {
+          "shape": "UnauthorizedClientException"
+        },
+        {
+          "shape": "ThrottledClientException"
+        },
+        {
+          "shape": "ServiceUnavailableException"
+        },
+        {
+          "shape": "ServiceFailureException"
+        }
+      ],
+      "documentation": "<p>Allows the <code>ChimeBearer</code> to search channels by channel members. Users or bots can search across the channels that they belong to. Users in the <code>AppInstanceAdmin</code> role can search across all channels.</p> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call as the value in the header.</p>"
     },
     "SendChannelMessage": {
       "name": "SendChannelMessage",
@@ -978,7 +1650,74 @@
           "shape": "ServiceFailureException"
         }
       ],
-      "documentation": "<p>Sends a message to a particular channel that the member is a part of.</p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the <code>AppInstanceUserArn</code> of the user that makes the API call as the value in the header.</p> <p>Also, <code>STANDARD</code> messages can contain 4KB of data and the 1KB of metadata. <code>CONTROL</code> messages can contain 30 bytes of data and no metadata.</p> </note>"
+      "documentation": "<p>Sends a message to a particular channel that the member is a part of.</p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call as the value in the header.</p> <p>Also, <code>STANDARD</code> messages can contain 4KB of data and the 1KB of metadata. <code>CONTROL</code> messages can contain 30 bytes of data and no metadata.</p> </note>"
+    },
+    "TagResource": {
+      "name": "TagResource",
+      "http": {
+        "method": "POST",
+        "requestUri": "/tags?operation=tag-resource",
+        "responseCode": 204
+      },
+      "input": {
+        "shape": "TagResourceRequest"
+      },
+      "errors": [
+        {
+          "shape": "BadRequestException"
+        },
+        {
+          "shape": "ForbiddenException"
+        },
+        {
+          "shape": "UnauthorizedClientException"
+        },
+        {
+          "shape": "ResourceLimitExceededException"
+        },
+        {
+          "shape": "ThrottledClientException"
+        },
+        {
+          "shape": "ServiceUnavailableException"
+        },
+        {
+          "shape": "ServiceFailureException"
+        }
+      ],
+      "documentation": "<p>Applies the specified tags to the specified Amazon Chime SDK messaging resource.</p>"
+    },
+    "UntagResource": {
+      "name": "UntagResource",
+      "http": {
+        "method": "POST",
+        "requestUri": "/tags?operation=untag-resource",
+        "responseCode": 204
+      },
+      "input": {
+        "shape": "UntagResourceRequest"
+      },
+      "errors": [
+        {
+          "shape": "BadRequestException"
+        },
+        {
+          "shape": "ForbiddenException"
+        },
+        {
+          "shape": "UnauthorizedClientException"
+        },
+        {
+          "shape": "ThrottledClientException"
+        },
+        {
+          "shape": "ServiceUnavailableException"
+        },
+        {
+          "shape": "ServiceFailureException"
+        }
+      ],
+      "documentation": "<p>Removes the specified tags from the specified Amazon Chime SDK messaging resource.</p>"
     },
     "UpdateChannel": {
       "name": "UpdateChannel",
@@ -1016,7 +1755,45 @@
           "shape": "ServiceFailureException"
         }
       ],
-      "documentation": "<p>Update a channel's attributes.</p> <p> <b>Restriction</b>: You can't change a channel's privacy. </p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the <code>AppInstanceUserArn</code> of the user that makes the API call as the value in the header.</p> </note>"
+      "documentation": "<p>Update a channel's attributes.</p> <p> <b>Restriction</b>: You can't change a channel's privacy. </p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call as the value in the header.</p> </note>"
+    },
+    "UpdateChannelFlow": {
+      "name": "UpdateChannelFlow",
+      "http": {
+        "method": "PUT",
+        "requestUri": "/channel-flows/{channelFlowArn}",
+        "responseCode": 200
+      },
+      "input": {
+        "shape": "UpdateChannelFlowRequest"
+      },
+      "output": {
+        "shape": "UpdateChannelFlowResponse"
+      },
+      "errors": [
+        {
+          "shape": "BadRequestException"
+        },
+        {
+          "shape": "ForbiddenException"
+        },
+        {
+          "shape": "UnauthorizedClientException"
+        },
+        {
+          "shape": "ConflictException"
+        },
+        {
+          "shape": "ThrottledClientException"
+        },
+        {
+          "shape": "ServiceUnavailableException"
+        },
+        {
+          "shape": "ServiceFailureException"
+        }
+      ],
+      "documentation": "<p>Updates channel flow attributes. This is a developer API.</p>"
     },
     "UpdateChannelMessage": {
       "name": "UpdateChannelMessage",
@@ -1054,7 +1831,7 @@
           "shape": "ServiceFailureException"
         }
       ],
-      "documentation": "<p>Updates the content of a message.</p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the <code>AppInstanceUserArn</code> of the user that makes the API call as the value in the header.</p> </note>"
+      "documentation": "<p>Updates the content of a message.</p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call as the value in the header.</p> </note>"
     },
     "UpdateChannelReadMarker": {
       "name": "UpdateChannelReadMarker",
@@ -1092,10 +1869,18 @@
           "shape": "ServiceFailureException"
         }
       ],
-      "documentation": "<p>The details of the time when a user last read messages in a channel.</p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the <code>AppInstanceUserArn</code> of the user that makes the API call as the value in the header.</p> </note>"
+      "documentation": "<p>The details of the time when a user last read messages in a channel.</p> <note> <p>The <code>x-amz-chime-bearer</code> request header is mandatory. Use the ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call as the value in the header.</p> </note>"
     }
   },
   "shapes": {
+    "AllowNotifications": {
+      "type": "string",
+      "enum": [
+        "ALL",
+        "NONE",
+        "FILTERED"
+      ]
+    },
     "AppInstanceUserMembershipSummary": {
       "type": "structure",
       "members": {
@@ -1105,10 +1890,40 @@
         },
         "ReadMarkerTimestamp": {
           "shape": "Timestamp",
-          "documentation": "<p>The time at which a message was last read.</p>"
+          "documentation": "<p>The time at which an <code>AppInstanceUser</code> last marked a channel as read.</p>"
+        },
+        "SubChannelId": {
+          "shape": "SubChannelId",
+          "documentation": "<p>The ID of the SubChannel that the <code>AppInstanceUser</code> is a member of.</p>"
         }
       },
       "documentation": "<p>Summary of the membership details of an <code>AppInstanceUser</code>.</p>"
+    },
+    "AssociateChannelFlowRequest": {
+      "type": "structure",
+      "required": [
+        "ChannelArn",
+        "ChannelFlowArn",
+        "ChimeBearer"
+      ],
+      "members": {
+        "ChannelArn": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The ARN of the channel.</p>",
+          "location": "uri",
+          "locationName": "channelArn"
+        },
+        "ChannelFlowArn": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The ARN of the channel flow.</p>"
+        },
+        "ChimeBearer": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The <code>AppInstanceUserArn</code> of the user making the API call.</p>",
+          "location": "header",
+          "locationName": "x-amz-chime-bearer"
+        }
+      }
     },
     "BatchChannelMemberships": {
       "type": "structure",
@@ -1119,7 +1934,7 @@
         },
         "Type": {
           "shape": "ChannelMembershipType",
-          "documentation": "<p>The membership types set for the channel users.</p>"
+          "documentation": "<p>The membership types set for the channel members.</p>"
         },
         "Members": {
           "shape": "Members",
@@ -1127,7 +1942,11 @@
         },
         "ChannelArn": {
           "shape": "ChimeArn",
-          "documentation": "<p>The ARN of the channel to which you're adding users.</p>"
+          "documentation": "<p>The ARN of the channel to which you're adding members.</p>"
+        },
+        "SubChannelId": {
+          "shape": "SubChannelId",
+          "documentation": "<p>The ID of the SubChannel.</p>"
         }
       },
       "documentation": "<p>The membership information, including member ARNs, the channel ARN, and membership types.</p>"
@@ -1137,7 +1956,7 @@
       "members": {
         "MemberArn": {
           "shape": "ChimeArn",
-          "documentation": "<p>The ARN of the member that the service couldn't add.</p>"
+          "documentation": "<p>The <code>AppInstanceUserArn</code> of the member that the service couldn't add.</p>"
         },
         "ErrorCode": {
           "shape": "ErrorCode",
@@ -1166,7 +1985,7 @@
       "members": {
         "ChannelArn": {
           "shape": "ChimeArn",
-          "documentation": "<p>The ARN of the channel to which you're adding users.</p>",
+          "documentation": "<p>The ARN of the channel to which you're adding users or bots.</p>",
           "location": "uri",
           "locationName": "channelArn"
         },
@@ -1176,13 +1995,17 @@
         },
         "MemberArns": {
           "shape": "MemberArns",
-          "documentation": "<p>The ARNs of the members you want to add to the channel.</p>"
+          "documentation": "<p>The ARNs of the members you want to add to the channel. Only <code>AppInstanceUsers</code> and <code>AppInstanceBots</code> can be added as a channel member.</p>"
         },
         "ChimeBearer": {
           "shape": "ChimeArn",
-          "documentation": "<p>The <code>AppInstanceUserArn</code> of the user that makes the API call.</p>",
+          "documentation": "<p>The ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call.</p>",
           "location": "header",
           "locationName": "x-amz-chime-bearer"
+        },
+        "SubChannelId": {
+          "shape": "SubChannelId",
+          "documentation": "<p>The ID of the SubChannel in the request. </p> <note> <p>Only required when creating membership in a SubChannel for a moderator in an elastic channel.</p> </note>"
         }
       }
     },
@@ -1198,6 +2021,11 @@
           "documentation": "<p>If the action fails for one or more of the memberships in the request, a list of the memberships is returned, along with error codes and error messages.</p>"
         }
       }
+    },
+    "CallbackIdType": {
+      "type": "string",
+      "max": 64,
+      "min": 32
     },
     "Channel": {
       "type": "structure",
@@ -1237,9 +2065,53 @@
         "LastUpdatedTimestamp": {
           "shape": "Timestamp",
           "documentation": "<p>The time at which a channel was last updated.</p>"
+        },
+        "ChannelFlowArn": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The ARN of the channel flow.</p>"
+        },
+        "ElasticChannelConfiguration": {
+          "shape": "ElasticChannelConfiguration",
+          "documentation": "<p>The attributes required to configure and create an elastic channel. An elastic channel can support a maximum of 1-million members.</p>"
+        },
+        "ExpirationSettings": {
+          "shape": "ExpirationSettings",
+          "documentation": "<p>Settings that control when a channel expires.</p>"
         }
       },
       "documentation": "<p>The details of a channel.</p>"
+    },
+    "ChannelAssociatedWithFlowSummary": {
+      "type": "structure",
+      "members": {
+        "Name": {
+          "shape": "NonEmptyResourceName",
+          "documentation": "<p>The name of the channel flow.</p>"
+        },
+        "ChannelArn": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The ARN of the channel.</p>"
+        },
+        "Mode": {
+          "shape": "ChannelMode",
+          "documentation": "<p>The mode of the channel.</p>"
+        },
+        "Privacy": {
+          "shape": "ChannelPrivacy",
+          "documentation": "<p>The channel's privacy setting.</p>"
+        },
+        "Metadata": {
+          "shape": "Metadata",
+          "documentation": "<p>The channel's metadata.</p>"
+        }
+      },
+      "documentation": "<p>Summary of details of a channel associated with channel flow.</p>"
+    },
+    "ChannelAssociatedWithFlowSummaryList": {
+      "type": "list",
+      "member": {
+        "shape": "ChannelAssociatedWithFlowSummary"
+      }
     },
     "ChannelBan": {
       "type": "structure",
@@ -1279,6 +2151,118 @@
         "shape": "ChannelBanSummary"
       }
     },
+    "ChannelFlow": {
+      "type": "structure",
+      "members": {
+        "ChannelFlowArn": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The ARN of the channel flow.</p>"
+        },
+        "Processors": {
+          "shape": "ProcessorList",
+          "documentation": "<p>Information about the processor Lambda functions.</p>"
+        },
+        "Name": {
+          "shape": "NonEmptyResourceName",
+          "documentation": "<p>The name of the channel flow.</p>"
+        },
+        "CreatedTimestamp": {
+          "shape": "Timestamp",
+          "documentation": "<p>The time at which the channel flow was created.</p>"
+        },
+        "LastUpdatedTimestamp": {
+          "shape": "Timestamp",
+          "documentation": "<p>The time at which a channel flow was updated.</p>"
+        }
+      },
+      "documentation": "<p>The details of a channel flow.</p>"
+    },
+    "ChannelFlowCallbackRequest": {
+      "type": "structure",
+      "required": [
+        "CallbackId",
+        "ChannelArn",
+        "ChannelMessage"
+      ],
+      "members": {
+        "CallbackId": {
+          "shape": "CallbackIdType",
+          "documentation": "<p>The identifier passed to the processor by the service when invoked. Use the identifier to call back the service.</p>",
+          "idempotencyToken": true
+        },
+        "ChannelArn": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The ARN of the channel.</p>",
+          "location": "uri",
+          "locationName": "channelArn"
+        },
+        "DeleteResource": {
+          "shape": "NonNullableBoolean",
+          "documentation": "<p>When a processor determines that a message needs to be <code>DENIED</code>, pass this parameter with a value of true.</p>"
+        },
+        "ChannelMessage": {
+          "shape": "ChannelMessageCallback",
+          "documentation": "<p>Stores information about the processed message.</p>"
+        }
+      }
+    },
+    "ChannelFlowCallbackResponse": {
+      "type": "structure",
+      "members": {
+        "ChannelArn": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The ARN of the channel.</p>"
+        },
+        "CallbackId": {
+          "shape": "CallbackIdType",
+          "documentation": "<p>The call back ID passed in the request.</p>"
+        }
+      }
+    },
+    "ChannelFlowExecutionOrder": {
+      "type": "integer",
+      "max": 3,
+      "min": 1
+    },
+    "ChannelFlowSummary": {
+      "type": "structure",
+      "members": {
+        "ChannelFlowArn": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The ARN of the channel flow.</p>"
+        },
+        "Name": {
+          "shape": "NonEmptyResourceName",
+          "documentation": "<p>The name of the channel flow.</p>"
+        },
+        "Processors": {
+          "shape": "ProcessorList",
+          "documentation": "<p>Information about the processor Lambda functions.</p>"
+        }
+      },
+      "documentation": "<p>Summary of details of a channel flow.</p>"
+    },
+    "ChannelFlowSummaryList": {
+      "type": "list",
+      "member": {
+        "shape": "ChannelFlowSummary"
+      }
+    },
+    "ChannelId": {
+      "type": "string",
+      "max": 64,
+      "min": 1,
+      "pattern": "[A-Za-z0-9]([A-Za-z0-9\\:\\-\\_\\.\\@]{0,62}[A-Za-z0-9])?",
+      "sensitive": true
+    },
+    "ChannelMemberArns": {
+      "type": "list",
+      "member": {
+        "shape": "ChimeArn"
+      },
+      "max": 10,
+      "min": 1
+    },
     "ChannelMembership": {
       "type": "structure",
       "members": {
@@ -1305,6 +2289,10 @@
         "LastUpdatedTimestamp": {
           "shape": "Timestamp",
           "documentation": "<p>The time at which a channel membership was last updated.</p>"
+        },
+        "SubChannelId": {
+          "shape": "SubChannelId",
+          "documentation": "<p>The ID of the SubChannel that a user belongs to.</p>"
         }
       },
       "documentation": "<p>The details of a channel member.</p>"
@@ -1328,6 +2316,16 @@
       "member": {
         "shape": "ChannelMembershipForAppInstanceUserSummary"
       }
+    },
+    "ChannelMembershipPreferences": {
+      "type": "structure",
+      "members": {
+        "PushNotifications": {
+          "shape": "PushNotificationPreferences",
+          "documentation": "<p>The push notification configuration of a message.</p>"
+        }
+      },
+      "documentation": "<p>The channel membership preferences for an <code>AppInstanceUser</code>.</p>"
     },
     "ChannelMembershipSummary": {
       "type": "structure",
@@ -1398,9 +2396,62 @@
         "Persistence": {
           "shape": "ChannelMessagePersistenceType",
           "documentation": "<p>The persistence setting for a channel message.</p>"
+        },
+        "Status": {
+          "shape": "ChannelMessageStatusStructure",
+          "documentation": "<p>The status of the channel message.</p>"
+        },
+        "MessageAttributes": {
+          "shape": "MessageAttributeMap",
+          "documentation": "<p>The attributes for the message, used for message filtering along with a <code>FilterRule</code> defined in the <code>PushNotificationPreferences</code>.</p>"
+        },
+        "SubChannelId": {
+          "shape": "SubChannelId",
+          "documentation": "<p>The ID of the SubChannel.</p>"
+        },
+        "ContentType": {
+          "shape": "ContentType",
+          "documentation": "<p>The content type of the channel message.</p>"
         }
       },
       "documentation": "<p>The details of a message in a channel.</p>"
+    },
+    "ChannelMessageCallback": {
+      "type": "structure",
+      "required": [
+        "MessageId"
+      ],
+      "members": {
+        "MessageId": {
+          "shape": "MessageId",
+          "documentation": "<p>The message ID.</p>"
+        },
+        "Content": {
+          "shape": "NonEmptyContent",
+          "documentation": "<p>The message content.</p>"
+        },
+        "Metadata": {
+          "shape": "Metadata",
+          "documentation": "<p>The message metadata.</p>"
+        },
+        "PushNotification": {
+          "shape": "PushNotificationConfiguration",
+          "documentation": "<p>The push notification configuration of the message.</p>"
+        },
+        "MessageAttributes": {
+          "shape": "MessageAttributeMap",
+          "documentation": "<p>The attributes for the message, used for message filtering along with a <code>FilterRule</code> defined in the <code>PushNotificationPreferences</code>. </p>"
+        },
+        "SubChannelId": {
+          "shape": "SubChannelId",
+          "documentation": "<p>The ID of the SubChannel.</p>"
+        },
+        "ContentType": {
+          "shape": "ContentType",
+          "documentation": "<p>The content type of the call-back message.</p>"
+        }
+      },
+      "documentation": "<p>Stores information about a callback.</p>"
     },
     "ChannelMessagePersistenceType": {
       "type": "string",
@@ -1408,6 +2459,29 @@
         "PERSISTENT",
         "NON_PERSISTENT"
       ]
+    },
+    "ChannelMessageStatus": {
+      "type": "string",
+      "enum": [
+        "SENT",
+        "PENDING",
+        "FAILED",
+        "DENIED"
+      ]
+    },
+    "ChannelMessageStatusStructure": {
+      "type": "structure",
+      "members": {
+        "Value": {
+          "shape": "ChannelMessageStatus",
+          "documentation": "<p>The message status value.</p>"
+        },
+        "Detail": {
+          "shape": "StatusDetail",
+          "documentation": "<p>Contains more details about the messasge status.</p>"
+        }
+      },
+      "documentation": "<p>Stores information about a message status.</p>"
     },
     "ChannelMessageSummary": {
       "type": "structure",
@@ -1447,6 +2521,18 @@
         "Redacted": {
           "shape": "NonNullableBoolean",
           "documentation": "<p>Indicates whether a message was redacted.</p>"
+        },
+        "Status": {
+          "shape": "ChannelMessageStatusStructure",
+          "documentation": "<p>The message status. The status value is <code>SENT</code> for messages sent to a channel without a channel flow. For channels associated with channel flow, the value determines the processing stage.</p>"
+        },
+        "MessageAttributes": {
+          "shape": "MessageAttributeMap",
+          "documentation": "<p>The message attribues listed in a the summary of a channel message.</p>"
+        },
+        "ContentType": {
+          "shape": "ContentType",
+          "documentation": "<p>The content type of the channel messsage listed in the summary.</p>"
         }
       },
       "documentation": "<p>Summary of the messages in a <code>Channel</code>.</p>"
@@ -1509,6 +2595,14 @@
       },
       "documentation": "<p>The details of a channel moderator.</p>"
     },
+    "ChannelModeratorArns": {
+      "type": "list",
+      "member": {
+        "shape": "ChimeArn"
+      },
+      "max": 10,
+      "min": 1
+    },
     "ChannelModeratorSummary": {
       "type": "structure",
       "members": {
@@ -1557,7 +2651,7 @@
         },
         "LastMessageTimestamp": {
           "shape": "Timestamp",
-          "documentation": "<p>The time at which the last message in a channel was sent.</p>"
+          "documentation": "<p>The time at which the last persistent message in a channel was sent.</p>"
         }
       },
       "documentation": "<p>Summary of the details of a <code>Channel</code>.</p>"
@@ -1588,6 +2682,13 @@
       "pattern": "[\\s\\S]*",
       "sensitive": true
     },
+    "ContentType": {
+      "type": "string",
+      "max": 45,
+      "min": 0,
+      "pattern": "[\\s\\S]*",
+      "sensitive": true
+    },
     "CreateChannelBanRequest": {
       "type": "structure",
       "required": [
@@ -1604,11 +2705,11 @@
         },
         "MemberArn": {
           "shape": "ChimeArn",
-          "documentation": "<p>The ARN of the member being banned.</p>"
+          "documentation": "<p>The <code>AppInstanceUserArn</code> of the member being banned.</p>"
         },
         "ChimeBearer": {
           "shape": "ChimeArn",
-          "documentation": "<p>The <code>AppInstanceUserArn</code> of the user that makes the API call.</p>",
+          "documentation": "<p>The ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call.</p>",
           "location": "header",
           "locationName": "x-amz-chime-bearer"
         }
@@ -1624,6 +2725,47 @@
         "Member": {
           "shape": "Identity",
           "documentation": "<p>The <code>ChannelArn</code> and <code>BannedIdentity</code> of the member in the ban response.</p>"
+        }
+      }
+    },
+    "CreateChannelFlowRequest": {
+      "type": "structure",
+      "required": [
+        "AppInstanceArn",
+        "Processors",
+        "Name",
+        "ClientRequestToken"
+      ],
+      "members": {
+        "AppInstanceArn": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The ARN of the channel flow request.</p>"
+        },
+        "Processors": {
+          "shape": "ProcessorList",
+          "documentation": "<p>Information about the processor Lambda functions.</p>"
+        },
+        "Name": {
+          "shape": "NonEmptyResourceName",
+          "documentation": "<p>The name of the channel flow.</p>"
+        },
+        "Tags": {
+          "shape": "TagList",
+          "documentation": "<p>The tags for the creation request.</p>"
+        },
+        "ClientRequestToken": {
+          "shape": "ClientRequestToken",
+          "documentation": "<p>The client token for the request. An Idempotency token.</p>",
+          "idempotencyToken": true
+        }
+      }
+    },
+    "CreateChannelFlowResponse": {
+      "type": "structure",
+      "members": {
+        "ChannelFlowArn": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The ARN of the channel flow.</p>"
         }
       }
     },
@@ -1644,7 +2786,7 @@
         },
         "MemberArn": {
           "shape": "ChimeArn",
-          "documentation": "<p>The ARN of the member you want to add to the channel.</p>"
+          "documentation": "<p>The <code>AppInstanceUserArn</code> of the member you want to add to the channel.</p>"
         },
         "Type": {
           "shape": "ChannelMembershipType",
@@ -1652,9 +2794,13 @@
         },
         "ChimeBearer": {
           "shape": "ChimeArn",
-          "documentation": "<p>The <code>AppInstanceUserArn</code> of the user that makes the API call.</p>",
+          "documentation": "<p>The ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call.</p>",
           "location": "header",
           "locationName": "x-amz-chime-bearer"
+        },
+        "SubChannelId": {
+          "shape": "SubChannelId",
+          "documentation": "<p>The ID of the SubChannel in the request.</p> <note> <p>Only required when creating membership in a SubChannel for a moderator in an elastic channel.</p> </note>"
         }
       }
     },
@@ -1668,6 +2814,10 @@
         "Member": {
           "shape": "Identity",
           "documentation": "<p>The ARN and metadata of the member being added.</p>"
+        },
+        "SubChannelId": {
+          "shape": "SubChannelId",
+          "documentation": "<p>The ID of the SubChannel in the response.</p>"
         }
       }
     },
@@ -1687,11 +2837,11 @@
         },
         "ChannelModeratorArn": {
           "shape": "ChimeArn",
-          "documentation": "<p>The ARN of the moderator.</p>"
+          "documentation": "<p>The <code>AppInstanceUserArn</code> of the moderator.</p>"
         },
         "ChimeBearer": {
           "shape": "ChimeArn",
-          "documentation": "<p>The <code>AppInstanceUserArn</code> of the user that makes the API call.</p>",
+          "documentation": "<p>The ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call.</p>",
           "location": "header",
           "locationName": "x-amz-chime-bearer"
         }
@@ -1750,9 +2900,29 @@
         },
         "ChimeBearer": {
           "shape": "ChimeArn",
-          "documentation": "<p>The <code>AppInstanceUserArn</code> of the user that makes the API call.</p>",
+          "documentation": "<p>The ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call.</p>",
           "location": "header",
           "locationName": "x-amz-chime-bearer"
+        },
+        "ChannelId": {
+          "shape": "ChannelId",
+          "documentation": "<p>The ID of the channel in the request.</p>"
+        },
+        "MemberArns": {
+          "shape": "ChannelMemberArns",
+          "documentation": "<p>The ARNs of the channel members in the request.</p>"
+        },
+        "ModeratorArns": {
+          "shape": "ChannelModeratorArns",
+          "documentation": "<p>The ARNs of the channel moderators in the request.</p>"
+        },
+        "ElasticChannelConfiguration": {
+          "shape": "ElasticChannelConfiguration",
+          "documentation": "<p>The attributes required to configure and create an elastic channel. An elastic channel can support a maximum of 1-million users, excluding moderators.</p>"
+        },
+        "ExpirationSettings": {
+          "shape": "ExpirationSettings",
+          "documentation": "<p>Settings that control the interval after which the channel is automatically deleted.</p>"
         }
       }
     },
@@ -1787,9 +2957,23 @@
         },
         "ChimeBearer": {
           "shape": "ChimeArn",
-          "documentation": "<p>The <code>AppInstanceUserArn</code> of the user that makes the API call.</p>",
+          "documentation": "<p>The ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call.</p>",
           "location": "header",
           "locationName": "x-amz-chime-bearer"
+        }
+      }
+    },
+    "DeleteChannelFlowRequest": {
+      "type": "structure",
+      "required": [
+        "ChannelFlowArn"
+      ],
+      "members": {
+        "ChannelFlowArn": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The ARN of the channel flow.</p>",
+          "location": "uri",
+          "locationName": "channelFlowArn"
         }
       }
     },
@@ -1809,15 +2993,21 @@
         },
         "MemberArn": {
           "shape": "ChimeArn",
-          "documentation": "<p>The ARN of the member that you're removing from the channel.</p>",
+          "documentation": "<p>The <code>AppInstanceUserArn</code> of the member that you're removing from the channel.</p>",
           "location": "uri",
           "locationName": "memberArn"
         },
         "ChimeBearer": {
           "shape": "ChimeArn",
-          "documentation": "<p>The <code>AppInstanceUserArn</code> of the user that makes the API call.</p>",
+          "documentation": "<p>The ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call.</p>",
           "location": "header",
           "locationName": "x-amz-chime-bearer"
+        },
+        "SubChannelId": {
+          "shape": "SubChannelId",
+          "documentation": "<p>The ID of the SubChannel in the request.</p> <note> <p>Only for use by moderators.</p> </note>",
+          "location": "querystring",
+          "locationName": "sub-channel-id"
         }
       }
     },
@@ -1843,9 +3033,15 @@
         },
         "ChimeBearer": {
           "shape": "ChimeArn",
-          "documentation": "<p>The <code>AppInstanceUserArn</code> of the user that makes the API call.</p>",
+          "documentation": "<p>The ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call.</p>",
           "location": "header",
           "locationName": "x-amz-chime-bearer"
+        },
+        "SubChannelId": {
+          "shape": "SubChannelId",
+          "documentation": "<p>The ID of the SubChannel in the request.</p> <note> <p>Only required when deleting messages in a SubChannel that the user belongs to.</p> </note>",
+          "location": "querystring",
+          "locationName": "sub-channel-id"
         }
       }
     },
@@ -1865,13 +3061,13 @@
         },
         "ChannelModeratorArn": {
           "shape": "ChimeArn",
-          "documentation": "<p>The ARN of the moderator being deleted.</p>",
+          "documentation": "<p>The <code>AppInstanceUserArn</code> of the moderator being deleted.</p>",
           "location": "uri",
           "locationName": "channelModeratorArn"
         },
         "ChimeBearer": {
           "shape": "ChimeArn",
-          "documentation": "<p>The <code>AppInstanceUserArn</code> of the user that makes the API call.</p>",
+          "documentation": "<p>The ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call.</p>",
           "location": "header",
           "locationName": "x-amz-chime-bearer"
         }
@@ -1892,9 +3088,23 @@
         },
         "ChimeBearer": {
           "shape": "ChimeArn",
-          "documentation": "<p>The <code>AppInstanceUserArn</code> of the user that makes the API call.</p>",
+          "documentation": "<p>The ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call.</p>",
           "location": "header",
           "locationName": "x-amz-chime-bearer"
+        }
+      }
+    },
+    "DeleteMessagingStreamingConfigurationsRequest": {
+      "type": "structure",
+      "required": [
+        "AppInstanceArn"
+      ],
+      "members": {
+        "AppInstanceArn": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The ARN of the streaming configurations being deleted.</p>",
+          "location": "uri",
+          "locationName": "appInstanceArn"
         }
       }
     },
@@ -1914,13 +3124,13 @@
         },
         "MemberArn": {
           "shape": "ChimeArn",
-          "documentation": "<p>The ARN of the member being banned.</p>",
+          "documentation": "<p>The <code>AppInstanceUserArn</code> of the member being banned.</p>",
           "location": "uri",
           "locationName": "memberArn"
         },
         "ChimeBearer": {
           "shape": "ChimeArn",
-          "documentation": "<p>The <code>AppInstanceUserArn</code> of the user that makes the API call.</p>",
+          "documentation": "<p>The ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call.</p>",
           "location": "header",
           "locationName": "x-amz-chime-bearer"
         }
@@ -1932,6 +3142,29 @@
         "ChannelBan": {
           "shape": "ChannelBan",
           "documentation": "<p>The details of the ban.</p>"
+        }
+      }
+    },
+    "DescribeChannelFlowRequest": {
+      "type": "structure",
+      "required": [
+        "ChannelFlowArn"
+      ],
+      "members": {
+        "ChannelFlowArn": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The ARN of the channel flow.</p>",
+          "location": "uri",
+          "locationName": "channelFlowArn"
+        }
+      }
+    },
+    "DescribeChannelFlowResponse": {
+      "type": "structure",
+      "members": {
+        "ChannelFlow": {
+          "shape": "ChannelFlow",
+          "documentation": "<p>The channel flow details.</p>"
         }
       }
     },
@@ -1951,13 +3184,13 @@
         },
         "AppInstanceUserArn": {
           "shape": "ChimeArn",
-          "documentation": "<p>The ARN of the user in a channel.</p>",
+          "documentation": "<p>The ARN of the user or bot in a channel.</p>",
           "location": "querystring",
           "locationName": "app-instance-user-arn"
         },
         "ChimeBearer": {
           "shape": "ChimeArn",
-          "documentation": "<p>The <code>AppInstanceUserArn</code> of the user that makes the API call.</p>",
+          "documentation": "<p>The ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call.</p>",
           "location": "header",
           "locationName": "x-amz-chime-bearer"
         }
@@ -1988,15 +3221,21 @@
         },
         "MemberArn": {
           "shape": "ChimeArn",
-          "documentation": "<p>The ARN of the member.</p>",
+          "documentation": "<p>The <code>AppInstanceUserArn</code> of the member.</p>",
           "location": "uri",
           "locationName": "memberArn"
         },
         "ChimeBearer": {
           "shape": "ChimeArn",
-          "documentation": "<p>The <code>AppInstanceUserArn</code> of the user that makes the API call.</p>",
+          "documentation": "<p>The ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call.</p>",
           "location": "header",
           "locationName": "x-amz-chime-bearer"
+        },
+        "SubChannelId": {
+          "shape": "SubChannelId",
+          "documentation": "<p>The ID of the SubChannel in the request. The response contains an <code>ElasticChannelConfiguration</code> object.</p> <note> <p>Only required to get a user’s SubChannel membership details.</p> </note>",
+          "location": "querystring",
+          "locationName": "sub-channel-id"
         }
       }
     },
@@ -2025,13 +3264,13 @@
         },
         "AppInstanceUserArn": {
           "shape": "ChimeArn",
-          "documentation": "<p>The ARN of the <code>AppInstanceUser</code> in the moderated channel.</p>",
+          "documentation": "<p>The ARN of the user or bot in the moderated channel.</p>",
           "location": "querystring",
           "locationName": "app-instance-user-arn"
         },
         "ChimeBearer": {
           "shape": "ChimeArn",
-          "documentation": "<p>The <code>AppInstanceUserArn</code> of the user that makes the API call.</p>",
+          "documentation": "<p>The ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call.</p>",
           "location": "header",
           "locationName": "x-amz-chime-bearer"
         }
@@ -2062,13 +3301,13 @@
         },
         "ChannelModeratorArn": {
           "shape": "ChimeArn",
-          "documentation": "<p>The ARN of the channel moderator.</p>",
+          "documentation": "<p>The <code>AppInstanceUserArn</code> of the channel moderator.</p>",
           "location": "uri",
           "locationName": "channelModeratorArn"
         },
         "ChimeBearer": {
           "shape": "ChimeArn",
-          "documentation": "<p>The <code>AppInstanceUserArn</code> of the user that makes the API call.</p>",
+          "documentation": "<p>The ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call.</p>",
           "location": "header",
           "locationName": "x-amz-chime-bearer"
         }
@@ -2098,7 +3337,7 @@
         },
         "ChimeBearer": {
           "shape": "ChimeArn",
-          "documentation": "<p>The <code>AppInstanceUserArn</code> of the user that makes the API call.</p>",
+          "documentation": "<p>The ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call.</p>",
           "location": "header",
           "locationName": "x-amz-chime-bearer"
         }
@@ -2112,6 +3351,57 @@
           "documentation": "<p>The channel details.</p>"
         }
       }
+    },
+    "DisassociateChannelFlowRequest": {
+      "type": "structure",
+      "required": [
+        "ChannelArn",
+        "ChannelFlowArn",
+        "ChimeBearer"
+      ],
+      "members": {
+        "ChannelArn": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The ARN of the channel.</p>",
+          "location": "uri",
+          "locationName": "channelArn"
+        },
+        "ChannelFlowArn": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The ARN of the channel flow.</p>",
+          "location": "uri",
+          "locationName": "channelFlowArn"
+        },
+        "ChimeBearer": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The <code>AppInstanceUserArn</code> of the user making the API call.</p>",
+          "location": "header",
+          "locationName": "x-amz-chime-bearer"
+        }
+      }
+    },
+    "ElasticChannelConfiguration": {
+      "type": "structure",
+      "required": [
+        "MaximumSubChannels",
+        "TargetMembershipsPerSubChannel",
+        "MinimumMembershipPercentage"
+      ],
+      "members": {
+        "MaximumSubChannels": {
+          "shape": "MaximumSubChannels",
+          "documentation": "<p>The maximum number of SubChannels that you want to allow in the elastic channel.</p>"
+        },
+        "TargetMembershipsPerSubChannel": {
+          "shape": "TargetMembershipsPerSubChannel",
+          "documentation": "<p>The maximum number of members allowed in a SubChannel.</p>"
+        },
+        "MinimumMembershipPercentage": {
+          "shape": "MinimumMembershipPercentage",
+          "documentation": "<p>The minimum allowed percentage of TargetMembershipsPerSubChannel users. Ceil of the calculated value is used in balancing members among SubChannels of the elastic channel.</p>"
+        }
+      },
+      "documentation": "<p>The attributes required to configure and create an elastic channel. An elastic channel can support a maximum of 1-million members.</p>"
     },
     "ErrorCode": {
       "type": "string",
@@ -2132,6 +3422,94 @@
         "VoiceConnectorGroupAssociationsExist",
         "PhoneNumberAssociationsExist"
       ]
+    },
+    "ExpirationCriterion": {
+      "type": "string",
+      "enum": [
+        "CREATED_TIMESTAMP",
+        "LAST_MESSAGE_TIMESTAMP"
+      ]
+    },
+    "ExpirationDays": {
+      "type": "integer",
+      "max": 5475,
+      "min": 1
+    },
+    "ExpirationSettings": {
+      "type": "structure",
+      "required": [
+        "ExpirationDays",
+        "ExpirationCriterion"
+      ],
+      "members": {
+        "ExpirationDays": {
+          "shape": "ExpirationDays",
+          "documentation": "<p>The period in days after which the system automatically deletes a channel.</p>"
+        },
+        "ExpirationCriterion": {
+          "shape": "ExpirationCriterion",
+          "documentation": "<p>The conditions that must be met for a channel to expire.</p>"
+        }
+      },
+      "documentation": "<p>Settings that control the interval after which a channel is deleted.</p>"
+    },
+    "FallbackAction": {
+      "type": "string",
+      "enum": [
+        "CONTINUE",
+        "ABORT"
+      ]
+    },
+    "FilterRule": {
+      "type": "string",
+      "min": 1,
+      "pattern": "[\\s\\S]*",
+      "sensitive": true
+    },
+    "GetChannelMembershipPreferencesRequest": {
+      "type": "structure",
+      "required": [
+        "ChannelArn",
+        "MemberArn",
+        "ChimeBearer"
+      ],
+      "members": {
+        "ChannelArn": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The ARN of the channel.</p>",
+          "location": "uri",
+          "locationName": "channelArn"
+        },
+        "MemberArn": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The <code>AppInstanceUserArn</code> of the member retrieving the preferences.</p>",
+          "location": "uri",
+          "locationName": "memberArn"
+        },
+        "ChimeBearer": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call.</p>",
+          "location": "header",
+          "locationName": "x-amz-chime-bearer"
+        }
+      }
+    },
+    "GetChannelMembershipPreferencesResponse": {
+      "type": "structure",
+      "members": {
+        "ChannelArn": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The ARN of the channel.</p>"
+        },
+        "Member": {
+          "shape": "Identity",
+          "documentation": "<p>The details of a user.</p>"
+        },
+        "Preferences": {
+          "shape": "ChannelMembershipPreferences",
+          "documentation": "<p>The channel membership preferences for an <code>AppInstanceUser</code> .</p>"
+        }
+      }
     },
     "GetChannelMessageRequest": {
       "type": "structure",
@@ -2155,9 +3533,15 @@
         },
         "ChimeBearer": {
           "shape": "ChimeArn",
-          "documentation": "<p>The <code>AppInstanceUserArn</code> of the user that makes the API call.</p>",
+          "documentation": "<p>The ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call.</p>",
           "location": "header",
           "locationName": "x-amz-chime-bearer"
+        },
+        "SubChannelId": {
+          "shape": "SubChannelId",
+          "documentation": "<p>The ID of the SubChannel in the request.</p> <note> <p>Only required when getting messages in a SubChannel that the user belongs to.</p> </note>",
+          "location": "querystring",
+          "locationName": "sub-channel-id"
         }
       }
     },
@@ -2167,6 +3551,49 @@
         "ChannelMessage": {
           "shape": "ChannelMessage",
           "documentation": "<p>The details of and content in the message.</p>"
+        }
+      }
+    },
+    "GetChannelMessageStatusRequest": {
+      "type": "structure",
+      "required": [
+        "ChannelArn",
+        "MessageId",
+        "ChimeBearer"
+      ],
+      "members": {
+        "ChannelArn": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The ARN of the channel</p>",
+          "location": "uri",
+          "locationName": "channelArn"
+        },
+        "MessageId": {
+          "shape": "MessageId",
+          "documentation": "<p>The ID of the message.</p>",
+          "location": "uri",
+          "locationName": "messageId"
+        },
+        "ChimeBearer": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The <code>AppInstanceUserArn</code> of the user making the API call.</p>",
+          "location": "header",
+          "locationName": "x-amz-chime-bearer"
+        },
+        "SubChannelId": {
+          "shape": "SubChannelId",
+          "documentation": "<p>The ID of the SubChannel in the request.</p> <note> <p>Only required when getting message status in a SubChannel that the user belongs to.</p> </note>",
+          "location": "querystring",
+          "locationName": "sub-channel-id"
+        }
+      }
+    },
+    "GetChannelMessageStatusResponse": {
+      "type": "structure",
+      "members": {
+        "Status": {
+          "shape": "ChannelMessageStatusStructure",
+          "documentation": "<p>The message status and details.</p>"
         }
       }
     },
@@ -2183,6 +3610,29 @@
         }
       }
     },
+    "GetMessagingStreamingConfigurationsRequest": {
+      "type": "structure",
+      "required": [
+        "AppInstanceArn"
+      ],
+      "members": {
+        "AppInstanceArn": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The ARN of the streaming configurations.</p>",
+          "location": "uri",
+          "locationName": "appInstanceArn"
+        }
+      }
+    },
+    "GetMessagingStreamingConfigurationsResponse": {
+      "type": "structure",
+      "members": {
+        "StreamingConfigurations": {
+          "shape": "StreamingConfigurationList",
+          "documentation": "<p>The streaming settings.</p>"
+        }
+      }
+    },
     "Identity": {
       "type": "structure",
       "members": {
@@ -2195,7 +3645,37 @@
           "documentation": "<p>The name in an Identity.</p>"
         }
       },
-      "documentation": "<p>The details of a user.</p>"
+      "documentation": "<p>The details of a user or bot.</p>"
+    },
+    "InvocationType": {
+      "type": "string",
+      "enum": [
+        "ASYNC"
+      ]
+    },
+    "LambdaConfiguration": {
+      "type": "structure",
+      "required": [
+        "ResourceArn",
+        "InvocationType"
+      ],
+      "members": {
+        "ResourceArn": {
+          "shape": "LambdaFunctionArn",
+          "documentation": "<p>The ARN of the Lambda message processing function.</p>"
+        },
+        "InvocationType": {
+          "shape": "InvocationType",
+          "documentation": "<p>Controls how the Lambda function is invoked.</p>"
+        }
+      },
+      "documentation": "<p>Stores metadata about a Lambda processor.</p>"
+    },
+    "LambdaFunctionArn": {
+      "type": "string",
+      "max": 2048,
+      "min": 15,
+      "pattern": "arn:aws:lambda:[a-z]{2}-[a-z]+-\\d{1}:\\d{12}:function:[a-zA-Z0-9\\-_\\.]+(:(\\$LATEST|[a-zA-Z0-9\\-_]+))?"
     },
     "ListChannelBansRequest": {
       "type": "structure",
@@ -2224,7 +3704,7 @@
         },
         "ChimeBearer": {
           "shape": "ChimeArn",
-          "documentation": "<p>The <code>AppInstanceUserArn</code> of the user that makes the API call.</p>",
+          "documentation": "<p>The ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call.</p>",
           "location": "header",
           "locationName": "x-amz-chime-bearer"
         }
@@ -2247,6 +3727,45 @@
         }
       }
     },
+    "ListChannelFlowsRequest": {
+      "type": "structure",
+      "required": [
+        "AppInstanceArn"
+      ],
+      "members": {
+        "AppInstanceArn": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The ARN of the app instance.</p>",
+          "location": "querystring",
+          "locationName": "app-instance-arn"
+        },
+        "MaxResults": {
+          "shape": "MaxResults",
+          "documentation": "<p>The maximum number of channel flows that you want to return.</p>",
+          "location": "querystring",
+          "locationName": "max-results"
+        },
+        "NextToken": {
+          "shape": "NextToken",
+          "documentation": "<p>The token passed by previous API calls until all requested channel flows are returned.</p>",
+          "location": "querystring",
+          "locationName": "next-token"
+        }
+      }
+    },
+    "ListChannelFlowsResponse": {
+      "type": "structure",
+      "members": {
+        "ChannelFlows": {
+          "shape": "ChannelFlowSummaryList",
+          "documentation": "<p>The information about each channel flow.</p>"
+        },
+        "NextToken": {
+          "shape": "NextToken",
+          "documentation": "<p>The token passed by previous API calls until all requested channels are returned.</p>"
+        }
+      }
+    },
     "ListChannelMembershipsForAppInstanceUserRequest": {
       "type": "structure",
       "required": [
@@ -2255,7 +3774,7 @@
       "members": {
         "AppInstanceUserArn": {
           "shape": "ChimeArn",
-          "documentation": "<p>The ARN of the <code>AppInstanceUser</code>s</p>",
+          "documentation": "<p>The ARN of the user or bot.</p>",
           "location": "querystring",
           "locationName": "app-instance-user-arn"
         },
@@ -2273,7 +3792,7 @@
         },
         "ChimeBearer": {
           "shape": "ChimeArn",
-          "documentation": "<p>The <code>AppInstanceUserArn</code> of the user that makes the API call.</p>",
+          "documentation": "<p>The ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call.</p>",
           "location": "header",
           "locationName": "x-amz-chime-bearer"
         }
@@ -2284,7 +3803,7 @@
       "members": {
         "ChannelMemberships": {
           "shape": "ChannelMembershipForAppInstanceUserSummaryList",
-          "documentation": "<p>The token passed by previous API calls until all requested users are returned.</p>"
+          "documentation": "<p>The information for the requested channel memberships.</p>"
         },
         "NextToken": {
           "shape": "NextToken",
@@ -2307,7 +3826,7 @@
         },
         "Type": {
           "shape": "ChannelMembershipType",
-          "documentation": "<p>The membership type of a user, <code>DEFAULT</code> or <code>HIDDEN</code>. Default members are always returned as part of <code>ListChannelMemberships</code>. Hidden members are only returned if the type filter in <code>ListChannelMemberships</code> equals <code>HIDDEN</code>. Otherwise hidden members are not returned.</p>",
+          "documentation": "<p>The membership type of a user, <code>DEFAULT</code> or <code>HIDDEN</code>. Default members are returned as part of <code>ListChannelMemberships</code> if no type is specified. Hidden members are only returned if the type filter in <code>ListChannelMemberships</code> equals <code>HIDDEN</code>.</p>",
           "location": "querystring",
           "locationName": "type"
         },
@@ -2325,9 +3844,15 @@
         },
         "ChimeBearer": {
           "shape": "ChimeArn",
-          "documentation": "<p>The <code>AppInstanceUserArn</code> of the user that makes the API call.</p>",
+          "documentation": "<p>The ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call.</p>",
           "location": "header",
           "locationName": "x-amz-chime-bearer"
+        },
+        "SubChannelId": {
+          "shape": "SubChannelId",
+          "documentation": "<p>The ID of the SubChannel in the request.</p> <note> <p>Only required when listing a user's memberships in a particular sub-channel of an elastic channel.</p> </note>",
+          "location": "querystring",
+          "locationName": "sub-channel-id"
         }
       }
     },
@@ -2393,9 +3918,15 @@
         },
         "ChimeBearer": {
           "shape": "ChimeArn",
-          "documentation": "<p>The <code>AppInstanceUserArn</code> of the user that makes the API call.</p>",
+          "documentation": "<p>The ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call.</p>",
           "location": "header",
           "locationName": "x-amz-chime-bearer"
+        },
+        "SubChannelId": {
+          "shape": "SubChannelId",
+          "documentation": "<p>The ID of the SubChannel in the request.</p> <note> <p>Only required when listing the messages in a SubChannel that the user belongs to.</p> </note>",
+          "location": "querystring",
+          "locationName": "sub-channel-id"
         }
       }
     },
@@ -2413,6 +3944,10 @@
         "ChannelMessages": {
           "shape": "ChannelMessageSummaryList",
           "documentation": "<p>The information about, and content of, each requested message.</p>"
+        },
+        "SubChannelId": {
+          "shape": "SubChannelId",
+          "documentation": "<p>The ID of the SubChannel in the response.</p>"
         }
       }
     },
@@ -2443,7 +3978,7 @@
         },
         "ChimeBearer": {
           "shape": "ChimeArn",
-          "documentation": "<p>The <code>AppInstanceUserArn</code> of the user that makes the API call.</p>",
+          "documentation": "<p>The ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call.</p>",
           "location": "header",
           "locationName": "x-amz-chime-bearer"
         }
@@ -2466,6 +4001,45 @@
         }
       }
     },
+    "ListChannelsAssociatedWithChannelFlowRequest": {
+      "type": "structure",
+      "required": [
+        "ChannelFlowArn"
+      ],
+      "members": {
+        "ChannelFlowArn": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The ARN of the channel flow.</p>",
+          "location": "querystring",
+          "locationName": "channel-flow-arn"
+        },
+        "MaxResults": {
+          "shape": "MaxResults",
+          "documentation": "<p>The maximum number of channels that you want to return.</p>",
+          "location": "querystring",
+          "locationName": "max-results"
+        },
+        "NextToken": {
+          "shape": "NextToken",
+          "documentation": "<p>The token passed by previous API calls until all requested channels are returned.</p>",
+          "location": "querystring",
+          "locationName": "next-token"
+        }
+      }
+    },
+    "ListChannelsAssociatedWithChannelFlowResponse": {
+      "type": "structure",
+      "members": {
+        "Channels": {
+          "shape": "ChannelAssociatedWithFlowSummaryList",
+          "documentation": "<p>The information about each channel.</p>"
+        },
+        "NextToken": {
+          "shape": "NextToken",
+          "documentation": "<p>The token passed by previous API calls until all requested channels are returned.</p>"
+        }
+      }
+    },
     "ListChannelsModeratedByAppInstanceUserRequest": {
       "type": "structure",
       "required": [
@@ -2474,7 +4048,7 @@
       "members": {
         "AppInstanceUserArn": {
           "shape": "ChimeArn",
-          "documentation": "<p>The ARN of the user in the moderated channel.</p>",
+          "documentation": "<p>The ARN of the user or bot in the moderated channel.</p>",
           "location": "querystring",
           "locationName": "app-instance-user-arn"
         },
@@ -2492,7 +4066,7 @@
         },
         "ChimeBearer": {
           "shape": "ChimeArn",
-          "documentation": "<p>The <code>AppInstanceUserArn</code> of the user that makes the API call.</p>",
+          "documentation": "<p>The ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call.</p>",
           "location": "header",
           "locationName": "x-amz-chime-bearer"
         }
@@ -2544,7 +4118,7 @@
         },
         "ChimeBearer": {
           "shape": "ChimeArn",
-          "documentation": "<p>The <code>AppInstanceUserArn</code> of the user that makes the API call.</p>",
+          "documentation": "<p>The ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call.</p>",
           "location": "header",
           "locationName": "x-amz-chime-bearer"
         }
@@ -2563,10 +4137,87 @@
         }
       }
     },
+    "ListSubChannelsRequest": {
+      "type": "structure",
+      "required": [
+        "ChannelArn",
+        "ChimeBearer"
+      ],
+      "members": {
+        "ChannelArn": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The ARN of elastic channel.</p>",
+          "location": "uri",
+          "locationName": "channelArn"
+        },
+        "ChimeBearer": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The <code>AppInstanceUserArn</code> of the user making the API call.</p>",
+          "location": "header",
+          "locationName": "x-amz-chime-bearer"
+        },
+        "MaxResults": {
+          "shape": "MaxResults",
+          "documentation": "<p>The maximum number of sub-channels that you want to return.</p>",
+          "location": "querystring",
+          "locationName": "max-results"
+        },
+        "NextToken": {
+          "shape": "NextToken",
+          "documentation": "<p>The token passed by previous API calls until all requested sub-channels are returned.</p>",
+          "location": "querystring",
+          "locationName": "next-token"
+        }
+      }
+    },
+    "ListSubChannelsResponse": {
+      "type": "structure",
+      "members": {
+        "ChannelArn": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The ARN of elastic channel.</p>"
+        },
+        "SubChannels": {
+          "shape": "SubChannelSummaryList",
+          "documentation": "<p>The information about each sub-channel.</p>"
+        },
+        "NextToken": {
+          "shape": "NextToken",
+          "documentation": "<p>The token passed by previous API calls until all requested sub-channels are returned.</p>"
+        }
+      }
+    },
+    "ListTagsForResourceRequest": {
+      "type": "structure",
+      "required": [
+        "ResourceARN"
+      ],
+      "members": {
+        "ResourceARN": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The ARN of the resource.</p>",
+          "location": "querystring",
+          "locationName": "arn"
+        }
+      }
+    },
+    "ListTagsForResourceResponse": {
+      "type": "structure",
+      "members": {
+        "Tags": {
+          "shape": "TagList",
+          "documentation": "<p>The tag key-value pairs.</p>"
+        }
+      }
+    },
     "MaxResults": {
       "type": "integer",
       "max": 50,
       "min": 1
+    },
+    "MaximumSubChannels": {
+      "type": "integer",
+      "min": 2
     },
     "MemberArns": {
       "type": "list",
@@ -2582,11 +4233,60 @@
         "shape": "Identity"
       }
     },
+    "MembershipCount": {
+      "type": "integer"
+    },
+    "MessageAttributeMap": {
+      "type": "map",
+      "key": {
+        "shape": "MessageAttributeName"
+      },
+      "value": {
+        "shape": "MessageAttributeValue"
+      }
+    },
+    "MessageAttributeName": {
+      "type": "string",
+      "max": 64,
+      "min": 1,
+      "pattern": "[\\s\\S]*",
+      "sensitive": true
+    },
+    "MessageAttributeStringValue": {
+      "type": "string",
+      "max": 512,
+      "min": 1,
+      "pattern": "[\\s\\S]*",
+      "sensitive": true
+    },
+    "MessageAttributeStringValues": {
+      "type": "list",
+      "member": {
+        "shape": "MessageAttributeStringValue"
+      }
+    },
+    "MessageAttributeValue": {
+      "type": "structure",
+      "members": {
+        "StringValues": {
+          "shape": "MessageAttributeStringValues",
+          "documentation": "<p>The strings in a message attribute value.</p>"
+        }
+      },
+      "documentation": "<p>A list of message attribute values.</p>"
+    },
     "MessageId": {
       "type": "string",
       "max": 128,
       "min": 1,
       "pattern": "[-_a-zA-Z0-9]*"
+    },
+    "MessagingDataType": {
+      "type": "string",
+      "enum": [
+        "Channel",
+        "ChannelMessage"
+      ]
     },
     "MessagingSessionEndpoint": {
       "type": "structure",
@@ -2604,6 +4304,11 @@
       "min": 0,
       "pattern": ".*",
       "sensitive": true
+    },
+    "MinimumMembershipPercentage": {
+      "type": "integer",
+      "max": 40,
+      "min": 1
     },
     "NextToken": {
       "type": "string",
@@ -2628,6 +4333,226 @@
     "NonNullableBoolean": {
       "type": "boolean"
     },
+    "Processor": {
+      "type": "structure",
+      "required": [
+        "Name",
+        "Configuration",
+        "ExecutionOrder",
+        "FallbackAction"
+      ],
+      "members": {
+        "Name": {
+          "shape": "NonEmptyResourceName",
+          "documentation": "<p>The name of the channel flow.</p>"
+        },
+        "Configuration": {
+          "shape": "ProcessorConfiguration",
+          "documentation": "<p>The information about the type of processor and its identifier.</p>"
+        },
+        "ExecutionOrder": {
+          "shape": "ChannelFlowExecutionOrder",
+          "documentation": "<p>The sequence in which processors run. If you have multiple processors in a channel flow, message processing goes through each processor in the sequence. The value determines the sequence. At this point, we support only 1 processor within a flow.</p>"
+        },
+        "FallbackAction": {
+          "shape": "FallbackAction",
+          "documentation": "<p>Determines whether to continue with message processing or stop it in cases where communication with a processor fails. If a processor has a fallback action of <code>ABORT</code> and communication with it fails, the processor sets the message status to <code>FAILED</code> and does not send the message to any recipients. Note that if the last processor in the channel flow sequence has a fallback action of <code>CONTINUE</code> and communication with the processor fails, then the message is considered processed and sent to recipients of the channel.</p>"
+        }
+      },
+      "documentation": "<p>The information about a processor in a channel flow.</p>"
+    },
+    "ProcessorConfiguration": {
+      "type": "structure",
+      "required": [
+        "Lambda"
+      ],
+      "members": {
+        "Lambda": {
+          "shape": "LambdaConfiguration",
+          "documentation": "<p>Indicates that the processor is of type Lambda.</p>"
+        }
+      },
+      "documentation": "<p>A processor's metadata.</p>"
+    },
+    "ProcessorList": {
+      "type": "list",
+      "member": {
+        "shape": "Processor"
+      },
+      "max": 3,
+      "min": 1
+    },
+    "PushNotificationBody": {
+      "type": "string",
+      "max": 150,
+      "min": 1,
+      "pattern": "[\\s\\S]*",
+      "sensitive": true
+    },
+    "PushNotificationConfiguration": {
+      "type": "structure",
+      "members": {
+        "Title": {
+          "shape": "PushNotificationTitle",
+          "documentation": "<p>The title of the push notification.</p>"
+        },
+        "Body": {
+          "shape": "PushNotificationBody",
+          "documentation": "<p>The body of the push notification.</p>"
+        },
+        "Type": {
+          "shape": "PushNotificationType",
+          "documentation": "<p>Enum value that indicates the type of the push notification for a message. <code>DEFAULT</code>: Normal mobile push notification. <code>VOIP</code>: VOIP mobile push notification.</p>"
+        }
+      },
+      "documentation": "<p>The push notification configuration of the message.</p>"
+    },
+    "PushNotificationPreferences": {
+      "type": "structure",
+      "required": [
+        "AllowNotifications"
+      ],
+      "members": {
+        "AllowNotifications": {
+          "shape": "AllowNotifications",
+          "documentation": "<p>Enum value that indicates which push notifications to send to the requested member of a channel. <code>ALL</code> sends all push notifications, <code>NONE</code> sends no push notifications, <code>FILTERED</code> sends only filtered push notifications. </p>"
+        },
+        "FilterRule": {
+          "shape": "FilterRule",
+          "documentation": "<p>The simple JSON object used to send a subset of a push notification to the requested member.</p>"
+        }
+      },
+      "documentation": "<p>The channel membership preferences for push notification.</p>"
+    },
+    "PushNotificationTitle": {
+      "type": "string",
+      "max": 50,
+      "min": 1,
+      "pattern": ".*",
+      "sensitive": true
+    },
+    "PushNotificationType": {
+      "type": "string",
+      "enum": [
+        "DEFAULT",
+        "VOIP"
+      ]
+    },
+    "PutChannelExpirationSettingsRequest": {
+      "type": "structure",
+      "required": [
+        "ChannelArn"
+      ],
+      "members": {
+        "ChannelArn": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The ARN of the channel.</p>",
+          "location": "uri",
+          "locationName": "channelArn"
+        },
+        "ChimeBearer": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call.</p>",
+          "location": "header",
+          "locationName": "x-amz-chime-bearer"
+        },
+        "ExpirationSettings": {
+          "shape": "ExpirationSettings",
+          "documentation": "<p>Settings that control the interval after which a channel is deleted.</p>"
+        }
+      }
+    },
+    "PutChannelExpirationSettingsResponse": {
+      "type": "structure",
+      "members": {
+        "ChannelArn": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The channel ARN.</p>"
+        },
+        "ExpirationSettings": {
+          "shape": "ExpirationSettings",
+          "documentation": "<p>Settings that control the interval after which a channel is deleted.</p>"
+        }
+      }
+    },
+    "PutChannelMembershipPreferencesRequest": {
+      "type": "structure",
+      "required": [
+        "ChannelArn",
+        "MemberArn",
+        "ChimeBearer",
+        "Preferences"
+      ],
+      "members": {
+        "ChannelArn": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The ARN of the channel.</p>",
+          "location": "uri",
+          "locationName": "channelArn"
+        },
+        "MemberArn": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The ARN of the member setting the preferences.</p>",
+          "location": "uri",
+          "locationName": "memberArn"
+        },
+        "ChimeBearer": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call.</p>",
+          "location": "header",
+          "locationName": "x-amz-chime-bearer"
+        },
+        "Preferences": {
+          "shape": "ChannelMembershipPreferences",
+          "documentation": "<p>The channel membership preferences of an <code>AppInstanceUser</code> .</p>"
+        }
+      }
+    },
+    "PutChannelMembershipPreferencesResponse": {
+      "type": "structure",
+      "members": {
+        "ChannelArn": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The ARN of the channel.</p>"
+        },
+        "Member": {
+          "shape": "Identity",
+          "documentation": "<p>The details of a user.</p>"
+        },
+        "Preferences": {
+          "shape": "ChannelMembershipPreferences",
+          "documentation": "<p>The ARN and metadata of the member being added.</p>"
+        }
+      }
+    },
+    "PutMessagingStreamingConfigurationsRequest": {
+      "type": "structure",
+      "required": [
+        "AppInstanceArn",
+        "StreamingConfigurations"
+      ],
+      "members": {
+        "AppInstanceArn": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The ARN of the streaming configuration.</p>",
+          "location": "uri",
+          "locationName": "appInstanceArn"
+        },
+        "StreamingConfigurations": {
+          "shape": "StreamingConfigurationList",
+          "documentation": "<p>The streaming configurations.</p>"
+        }
+      }
+    },
+    "PutMessagingStreamingConfigurationsResponse": {
+      "type": "structure",
+      "members": {
+        "StreamingConfigurations": {
+          "shape": "StreamingConfigurationList",
+          "documentation": "<p>The requested streaming configurations.</p>"
+        }
+      }
+    },
     "RedactChannelMessageRequest": {
       "type": "structure",
       "required": [
@@ -2650,9 +4575,13 @@
         },
         "ChimeBearer": {
           "shape": "ChimeArn",
-          "documentation": "<p>The <code>AppInstanceUserArn</code> of the user that makes the API call.</p>",
+          "documentation": "<p>The ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call.</p>",
           "location": "header",
           "locationName": "x-amz-chime-bearer"
+        },
+        "SubChannelId": {
+          "shape": "SubChannelId",
+          "documentation": "<p>The ID of the SubChannel in the request.</p>"
         }
       }
     },
@@ -2666,6 +4595,10 @@
         "MessageId": {
           "shape": "MessageId",
           "documentation": "<p>The ID of the message being redacted.</p>"
+        },
+        "SubChannelId": {
+          "shape": "SubChannelId",
+          "documentation": "<p>The ID of the SubChannel in the response.</p> <note> <p>Only required when redacting messages in a SubChannel that the user belongs to.</p> </note>"
         }
       }
     },
@@ -2675,6 +4608,107 @@
       "min": 0,
       "pattern": "[\\u0009\\u000A\\u000D\\u0020-\\u007E\\u0085\\u00A0-\\uD7FF\\uE000-\\uFFFD\\u10000-\\u10FFFF]*",
       "sensitive": true
+    },
+    "SearchChannelsRequest": {
+      "type": "structure",
+      "required": [
+        "Fields"
+      ],
+      "members": {
+        "ChimeBearer": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The <code>AppInstanceUserArn</code> of the user making the API call.</p>",
+          "location": "header",
+          "locationName": "x-amz-chime-bearer"
+        },
+        "Fields": {
+          "shape": "SearchFields",
+          "documentation": "<p>A list of the <code>Field</code> objects in the channel being searched.</p>"
+        },
+        "MaxResults": {
+          "shape": "MaxResults",
+          "documentation": "<p>The maximum number of channels that you want returned.</p>",
+          "location": "querystring",
+          "locationName": "max-results"
+        },
+        "NextToken": {
+          "shape": "NextToken",
+          "documentation": "<p>The token returned from previous API requests until the number of channels is reached.</p>",
+          "location": "querystring",
+          "locationName": "next-token"
+        }
+      }
+    },
+    "SearchChannelsResponse": {
+      "type": "structure",
+      "members": {
+        "Channels": {
+          "shape": "ChannelSummaryList",
+          "documentation": "<p>A list of the channels in the request.</p>"
+        },
+        "NextToken": {
+          "shape": "NextToken",
+          "documentation": "<p>The token returned from previous API responses until the number of channels is reached.</p>"
+        }
+      }
+    },
+    "SearchField": {
+      "type": "structure",
+      "required": [
+        "Key",
+        "Values",
+        "Operator"
+      ],
+      "members": {
+        "Key": {
+          "shape": "SearchFieldKey",
+          "documentation": "<p>An <code>enum</code> value that indicates the key to search the channel on. <code>MEMBERS</code> allows you to search channels based on memberships. You can use it with the <code>EQUALS</code> operator to get channels whose memberships are equal to the specified values, and with the <code>INCLUDES</code> operator to get channels whose memberships include the specified values.</p>"
+        },
+        "Values": {
+          "shape": "SearchFieldValues",
+          "documentation": "<p>The values that you want to search for, a list of strings. The values must be <code>AppInstanceUserArns</code> specified as a list of strings.</p> <note> <p>This operation isn't supported for <code>AppInstanceUsers</code> with large number of memberships.</p> </note>"
+        },
+        "Operator": {
+          "shape": "SearchFieldOperator",
+          "documentation": "<p>The operator used to compare field values, currently <code>EQUALS</code> or <code>INCLUDES</code>. Use the <code>EQUALS</code> operator to find channels whose memberships equal the specified values. Use the <code>INCLUDES</code> operator to find channels whose memberships include the specified values.</p>"
+        }
+      },
+      "documentation": "<p>A <code>Field</code> of the channel that you want to search.</p>"
+    },
+    "SearchFieldKey": {
+      "type": "string",
+      "enum": [
+        "MEMBERS"
+      ]
+    },
+    "SearchFieldOperator": {
+      "type": "string",
+      "enum": [
+        "EQUALS",
+        "INCLUDES"
+      ]
+    },
+    "SearchFieldValue": {
+      "type": "string",
+      "max": 512,
+      "min": 1,
+      "pattern": "[\\s\\S]*"
+    },
+    "SearchFieldValues": {
+      "type": "list",
+      "member": {
+        "shape": "SearchFieldValue"
+      },
+      "max": 20,
+      "min": 1
+    },
+    "SearchFields": {
+      "type": "list",
+      "member": {
+        "shape": "SearchField"
+      },
+      "max": 20,
+      "min": 1
     },
     "SendChannelMessageRequest": {
       "type": "structure",
@@ -2716,9 +4750,25 @@
         },
         "ChimeBearer": {
           "shape": "ChimeArn",
-          "documentation": "<p>The <code>AppInstanceUserArn</code> of the user that makes the API call.</p>",
+          "documentation": "<p>The ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call.</p>",
           "location": "header",
           "locationName": "x-amz-chime-bearer"
+        },
+        "PushNotification": {
+          "shape": "PushNotificationConfiguration",
+          "documentation": "<p>The push notification configuration of the message.</p>"
+        },
+        "MessageAttributes": {
+          "shape": "MessageAttributeMap",
+          "documentation": "<p>The attributes for the message, used for message filtering along with a <code>FilterRule</code> defined in the <code>PushNotificationPreferences</code>.</p>"
+        },
+        "SubChannelId": {
+          "shape": "SubChannelId",
+          "documentation": "<p>The ID of the SubChannel in the request.</p>"
+        },
+        "ContentType": {
+          "shape": "ContentType",
+          "documentation": "<p>The content type of the channel message.</p>"
         }
       }
     },
@@ -2732,6 +4782,14 @@
         "MessageId": {
           "shape": "MessageId",
           "documentation": "<p>The ID string assigned to each message.</p>"
+        },
+        "Status": {
+          "shape": "ChannelMessageStatusStructure",
+          "documentation": "<p>The status of the channel message.</p>"
+        },
+        "SubChannelId": {
+          "shape": "SubChannelId",
+          "documentation": "<p>The ID of the SubChannel in the response.</p>"
         }
       }
     },
@@ -2742,8 +4800,66 @@
         "DESCENDING"
       ]
     },
+    "StatusDetail": {
+      "type": "string",
+      "max": 256,
+      "min": 0,
+      "pattern": "[\\s\\S]*"
+    },
+    "StreamingConfiguration": {
+      "type": "structure",
+      "required": [
+        "DataType",
+        "ResourceArn"
+      ],
+      "members": {
+        "DataType": {
+          "shape": "MessagingDataType",
+          "documentation": "<p>The data type of the configuration.</p>"
+        },
+        "ResourceArn": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The ARN of the resource in the configuration. </p>"
+        }
+      },
+      "documentation": "<p>The configuration for connecting a messaging stream to Amazon Kinesis.</p>"
+    },
+    "StreamingConfigurationList": {
+      "type": "list",
+      "member": {
+        "shape": "StreamingConfiguration"
+      },
+      "max": 2,
+      "min": 1
+    },
     "String": {
       "type": "string"
+    },
+    "SubChannelId": {
+      "type": "string",
+      "max": 128,
+      "min": 1,
+      "pattern": "[-_a-zA-Z0-9]*"
+    },
+    "SubChannelSummary": {
+      "type": "structure",
+      "members": {
+        "SubChannelId": {
+          "shape": "SubChannelId",
+          "documentation": "<p>The unique ID of a SubChannel.</p>"
+        },
+        "MembershipCount": {
+          "shape": "MembershipCount",
+          "documentation": "<p>The number of members in a SubChannel.</p>"
+        }
+      },
+      "documentation": "<p>Summary of the sub-channels associated with the elastic channel.</p>"
+    },
+    "SubChannelSummaryList": {
+      "type": "list",
+      "member": {
+        "shape": "SubChannelSummary"
+      }
     },
     "Tag": {
       "type": "structure",
@@ -2754,20 +4870,28 @@
       "members": {
         "Key": {
           "shape": "TagKey",
-          "documentation": "<p>The key of the tag.</p>"
+          "documentation": "<p>The key in a tag.</p>"
         },
         "Value": {
           "shape": "TagValue",
-          "documentation": "<p>The value of the tag.</p>"
+          "documentation": "<p>The value in a tag.</p>"
         }
       },
-      "documentation": "<p>Describes a tag applied to a resource.</p>"
+      "documentation": "<p>A tag object containing a key-value pair.</p>"
     },
     "TagKey": {
       "type": "string",
       "max": 128,
       "min": 1,
       "sensitive": true
+    },
+    "TagKeyList": {
+      "type": "list",
+      "member": {
+        "shape": "TagKey"
+      },
+      "max": 50,
+      "min": 1
     },
     "TagList": {
       "type": "list",
@@ -2777,20 +4901,92 @@
       "max": 50,
       "min": 1
     },
+    "TagResourceRequest": {
+      "type": "structure",
+      "required": [
+        "ResourceARN",
+        "Tags"
+      ],
+      "members": {
+        "ResourceARN": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The resource ARN.</p>"
+        },
+        "Tags": {
+          "shape": "TagList",
+          "documentation": "<p>The tag key-value pairs.</p>"
+        }
+      }
+    },
     "TagValue": {
       "type": "string",
       "max": 256,
       "min": 1,
       "sensitive": true
     },
+    "TargetMembershipsPerSubChannel": {
+      "type": "integer",
+      "min": 2
+    },
     "Timestamp": {
       "type": "timestamp"
+    },
+    "UntagResourceRequest": {
+      "type": "structure",
+      "required": [
+        "ResourceARN",
+        "TagKeys"
+      ],
+      "members": {
+        "ResourceARN": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The resource ARN.</p>"
+        },
+        "TagKeys": {
+          "shape": "TagKeyList",
+          "documentation": "<p>The tag keys.</p>"
+        }
+      }
+    },
+    "UpdateChannelFlowRequest": {
+      "type": "structure",
+      "required": [
+        "ChannelFlowArn",
+        "Processors",
+        "Name"
+      ],
+      "members": {
+        "ChannelFlowArn": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The ARN of the channel flow.</p>",
+          "location": "uri",
+          "locationName": "channelFlowArn"
+        },
+        "Processors": {
+          "shape": "ProcessorList",
+          "documentation": "<p>Information about the processor Lambda functions </p>"
+        },
+        "Name": {
+          "shape": "NonEmptyResourceName",
+          "documentation": "<p>The name of the channel flow.</p>"
+        }
+      }
+    },
+    "UpdateChannelFlowResponse": {
+      "type": "structure",
+      "members": {
+        "ChannelFlowArn": {
+          "shape": "ChimeArn",
+          "documentation": "<p>The ARN of the channel flow.</p>"
+        }
+      }
     },
     "UpdateChannelMessageRequest": {
       "type": "structure",
       "required": [
         "ChannelArn",
         "MessageId",
+        "Content",
         "ChimeBearer"
       ],
       "members": {
@@ -2807,7 +5003,7 @@
           "locationName": "messageId"
         },
         "Content": {
-          "shape": "Content",
+          "shape": "NonEmptyContent",
           "documentation": "<p>The content of the message being updated.</p>"
         },
         "Metadata": {
@@ -2816,9 +5012,17 @@
         },
         "ChimeBearer": {
           "shape": "ChimeArn",
-          "documentation": "<p>The <code>AppInstanceUserArn</code> of the user that makes the API call.</p>",
+          "documentation": "<p>The ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call.</p>",
           "location": "header",
           "locationName": "x-amz-chime-bearer"
+        },
+        "SubChannelId": {
+          "shape": "SubChannelId",
+          "documentation": "<p>The ID of the SubChannel in the request.</p> <note> <p>Only required when updating messages in a SubChannel that the user belongs to.</p> </note>"
+        },
+        "ContentType": {
+          "shape": "ContentType",
+          "documentation": "<p>The content type of the channel message.</p>"
         }
       }
     },
@@ -2832,6 +5036,14 @@
         "MessageId": {
           "shape": "MessageId",
           "documentation": "<p>The ID string of the message being updated.</p>"
+        },
+        "Status": {
+          "shape": "ChannelMessageStatusStructure",
+          "documentation": "<p>The status of the message update.</p>"
+        },
+        "SubChannelId": {
+          "shape": "SubChannelId",
+          "documentation": "<p>The ID of the SubChannel in the response.</p>"
         }
       }
     },
@@ -2850,7 +5062,7 @@
         },
         "ChimeBearer": {
           "shape": "ChimeArn",
-          "documentation": "<p>The <code>AppInstanceUserArn</code> of the user that makes the API call.</p>",
+          "documentation": "<p>The ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call.</p>",
           "location": "header",
           "locationName": "x-amz-chime-bearer"
         }
@@ -2869,8 +5081,6 @@
       "type": "structure",
       "required": [
         "ChannelArn",
-        "Name",
-        "Mode",
         "ChimeBearer"
       ],
       "members": {
@@ -2894,7 +5104,7 @@
         },
         "ChimeBearer": {
           "shape": "ChimeArn",
-          "documentation": "<p>The <code>AppInstanceUserArn</code> of the user that makes the API call.</p>",
+          "documentation": "<p>The ARN of the <code>AppInstanceUser</code> or <code>AppInstanceBot</code> that makes the API call.</p>",
           "location": "header",
           "locationName": "x-amz-chime-bearer"
         }
@@ -2914,5 +5124,5 @@
       "max": 4096
     }
   },
-  "documentation": "<p>The Amazon Chime SDK Messaging APIs in this section allow software developers to send and receive messages in custom messaging applications. These APIs depend on the frameworks provided by the Amazon Chime SDK Identity APIs. For more information about the messaging APIs, see <a href=\"https://docs.aws.amazon.com/chime/latest/APIReference/API_Operations_Amazon_Chime_SDK_Messaging\">Amazon Chime SDK messaging</a> </p>"
+  "documentation": "<p>The Amazon Chime SDK Messaging APIs in this section allow software developers to send and receive messages in custom messaging applications. These APIs depend on the frameworks provided by the Amazon Chime SDK Identity APIs. For more information about the messaging APIs, see <a href=\"https://docs.aws.amazon.com/chime/latest/APIReference/API_Operations_Amazon_Chime_SDK_Messaging.html\">Amazon Chime SDK messaging</a>.</p>"
 }
